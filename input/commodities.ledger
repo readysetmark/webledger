@@ -1,0 +1,23 @@
+; This is a test file demonstrating buying and selling of commodities
+
+;2011/11/28 * Buying COM stocks
+;	(Assets:Investments:Units:MutualFund)			30.3250 COM
+;	Assets:Investments:BV:MutualFund 				$150.00
+;	Income:BV																$-150.00
+
+;2011/12/01 * Selling
+;	(Assets:Investments:Units:MutualFund)			-15.0000 COM
+;	Assets:Investments:BV:MutualFund				$-80.00
+;	Assets:Savings													$80.00
+
+
+
+
+2011/11/28 * Buying COM stocks
+	Assets:Investments:MutualFund			30 COM @@ $150.00
+	Income														$-150.00
+
+2011/12/01 * Selling
+	Assets:Investments:MutualFund			-15 COM @ $5.28 ; $160.00
+	Assets:Savings										$79.20
+

@@ -1,0 +1,23 @@
+; This is a test file
+
+2011/09/19 * (CODE) PAYEE
+	Assets:Savings 						$5,000.00  		; This is a note
+	Equity:OpeningBalances		$-5,000.00
+
+2011/09/19 * (CODE) General Store
+	Expenses:Food:Groceries 	$350.00
+	Assets:Savings
+
+2011/09/19 ! (INV) Investment
+	Assets:Investments:MutualFundCOM			30.354 COM @@ $23.00
+	Assets:Savings
+
+2011/09/19 ! (INV) Investment
+	Assets:Investments:MutualFundAGO			2.354 AGO195 @@ $3.00
+	Assets:Savings
+
+;P 2011/11/28 00:00:01 COM $0.8615
+
+2011/11/28 ! Selling investment
+	Assets:Savings												$26.15
+	Assets:Investments:MutualFundCOM			-30.354 COM
