@@ -69,6 +69,10 @@ def parse_into_ledgertree(filename):
 	sourcetext = open(filename).read()
 	generic_ast = parser.parse(sourcetext, verbose=False)
 	ledgertree = build_ledgertree(generic_ast)
+	autoBalanceLedgerTree(ledgertree)
+
+	# removing this as it is buggy (see Trello task)
+	#mergeInvestmentEntries(ledgertree)
 
 	return ledgertree
 

@@ -39,13 +39,18 @@ Generate a fixed number of parameterized HTML reports from the ledger file.
 
 ### TODO
 
+Parsing:
+-	Review "virtual" -- rename to "entry_type" of balanced/virtual balanced/virtual unbalanced
 -	Are notes/comments stored for header/entry lines?
+-	Review autobalance tree
+-	Merging investment nodes?
+
+Reporting:
 -	Handling of value vs. amount and commodity (final_balances and monthly_totals)
 -	Reporting on account parents (option)
 -	Clean up reporting code
 -	Investigate chart output
 -	Create an index page
--	Merging investment nodes?
 
 
 ### Main Tasks
