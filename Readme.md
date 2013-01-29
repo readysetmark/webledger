@@ -1,6 +1,8 @@
 Webledger v0.0.5
 ================
 
+[2013/01/27] Most of this is old and needs to be revised....
+
 Objective
 ---------
 
@@ -28,22 +30,26 @@ Dependencies:
 *	Pystache v0.5.0
 
 
+
+Implementation Notes
+--------------------
+
+Investments & Commodities:
+*	I'm basically ignoring these for the moment. The parser will parse them,
+but all processing after that point assumes one commodity and basically assumes
+only the "amount" field is used. I'll need to revisit this once I got around
+to adding investment/commodity support.
+
+
+
 Phase 1 Implementation (Reporting)
 ----------------------------------
-
-[2013/01/27] Most of this is old and needs to be revised....
 
 ### Objective
 
 Generate a fixed number of parameterized HTML reports from the ledger file.
 
 ### TODO
-
-Parsing:
--	Review "virtual" -- rename to "entry_type" of balanced/virtual balanced/virtual unbalanced
--	Are notes/comments stored for header/entry lines?
--	Review autobalance tree
--	Merging investment nodes?
 
 Reporting:
 -	Handling of value vs. amount and commodity (final_balances and monthly_totals)

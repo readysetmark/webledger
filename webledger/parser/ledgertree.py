@@ -24,7 +24,7 @@ class LedgerNode:
 		self.description = None
 		self.code = None
 		self.account = None
-		self.virtual = None
+		self.entry_type = None
 		self.amount = None
 		self.amountCommodity = None
 		self.value = None
@@ -36,7 +36,7 @@ class LedgerNode:
 		if parent != None:
 			parent.children.append(self)
 
-	def toString(self):
+	def to_string(self):
 		s = "    " * self.level
 		s += self.type + ":\n"
 
@@ -48,7 +48,7 @@ class LedgerNode:
 			s += ("    " * (self.level+1)) + "Description: " + self.description + "\n"
 		elif self.type == TRANSACTION:
 			s += ("    " * (self.level+1)) + "Account: " + self.account + "\n"
-			s += ("    " * (self.level+1)) + "Virtual: " + self.virtual + "\n"
+			s += ("    " * (self.level+1)) + "Entry Type: " + self.entry_type + "\n"
 			if self.amount != None:
 				s += ("    " * (self.level+1)) + "Amount:  " + ("%.2f" % self.amount) + " " + self.amountCommodity + "\n"
 			if self.value != None:
@@ -57,7 +57,7 @@ class LedgerNode:
 				s += ("    " * (self.level+1)) + "Note:    " + self.note + "\n"
 			
 		for child in self.children:
-			s += child.toString()
+			s += child.to_string()
 		return s
 		
 
@@ -69,7 +69,7 @@ def parse_into_ledgertree(filename):
 	sourcetext = open(filename).read()
 	generic_ast = parser.parse(sourcetext, verbose=False)
 	ledgertree = build_ledgertree(generic_ast)
-	autoBalanceLedgerTree(ledgertree)
+	balance_ledgertree(ledgertree)
 
 	# removing this as it is buggy (see Trello task)
 	#mergeInvestmentEntries(ledgertree)
@@ -155,13 +155,13 @@ def generateTransactionNode(entryNode, astNode):
 		if child.type == ACCOUNT:
 			transactionNode.account = getString(child)
 
-			transactionNode.virtual = "no"
+			transactionNode.entry_type = "balanced"
 
 			if transactionNode.account[0] == "(":
-				transactionNode.virtual = "unbalanced"
+				transactionNode.entry_type = "virtual unbalanced"
 				transactionNode.account = transactionNode.account.strip("()")
 			elif transactionNode.account[0] == "[":
-				transactionNode.virtual = "balanced"
+				transactionNode.entry_type = "virtual balanced"
 				transactionNode.account = transactionNode.account.strip("[]")
 		elif child.type == AMOUNT:
 			transactionNode.amount = getAmount(child)
@@ -210,32 +210,67 @@ def getAmountCommodity(astAmountNode):
 
 
 #-------------------------------------------------------------------
-#  autoBalanceLedgerTree
+#  balance_ledgertree
 #-------------------------------------------------------------------
 
-def autoBalanceLedgerTree(root):
+def balance_ledgertree(root):
 	"""
-	Auto balance ledger entries where a transaction amount is missing
+	Verify that transactions balance and auto-balance entries that do not
+	have one amount to the balance of the rest of the transaction.
+
+	For virtual unbalanced transactions:
+		- If an amount was not provided, raise an Exception.
+
+	For balanced and virtual balanced transactions:
+		- Transactions of the same type (balanced/virtual balanced) must balance
+		to 0. If they don't, and one entry in the transaction does not have an
+		amount, set its amount value so that the transaction would balance.
+		Otherwise, raise an exception.
 	"""
-	for entryNode in root.children:
+	for entry_node in root.children:
 		amount = Decimal(0)
 		commodity = ""
-		count = -1
-		updateNode = -1
-		for transactionNode in entryNode.children:
-			count += 1
-			if transactionNode.value != None:
-				amount += transactionNode.value
-				if commodity == "": commodity = transactionNode.valueCommodity
-			elif transactionNode.amount != None:
-				amount += transactionNode.amount
-				if commodity == "": commodity = transactionNode.amountCommodity
+		no_amount_entries = []
+		virtual_amount = Decimal(0)
+		virtual_commodity = ""
+		virtual_no_amount_entries = []
+		index = -1
+
+		for transaction_node in entry_node.children:
+			index += 1
+			
+			if transaction_node.entry_type == "virtual unbalanced":
+				if transaction_node.amount == None:
+					raise Exception("This entry contains a virtual unbalanced entry that has no amount:\r\n" + entry_node.to_string())
+			elif transaction_node.entry_type == "virtual balanced":
+				if transaction_node.amount != None:
+					virtual_amount += transaction_node.amount
+					if commodity == "": virtual_commodity = transaction_node.amountCommodity
+				else:
+					virtual_no_amount_entries.append(index)
 			else:
-				updateNode = count
+				if transaction_node.amount != None:
+					amount += transaction_node.amount
+					if commodity == "": commodity = transaction_node.amountCommodity
+				else:
+					no_amount_entries.append(index)
 		
-		if updateNode != -1 and amount != 0:
-			entryNode.children[updateNode].amount = -1 * amount
-			entryNode.children[updateNode].amountCommodity = commodity
+		if len(virtual_no_amount_entries) > 1:
+			raise Exception("This entry has multiple virtual balanced line items that do not have an amount:\r\n" + entry_node.to_string())
+		elif len(virtual_no_amount_entries) == 1:
+			entry_node.children[virtual_no_amount_entries[0]].amount = -1 * virtual_amount
+			entry_node.children[virtual_no_amount_entries[0]].amountCommodity = virtual_commodity
+		elif virtual_amount != 0:
+			raise Exception(("This entry has virtual balanced line items that do not balance (balance is: %.2f):\r\n" % virtual_amount) + entry_node.to_string())
+
+		if len(no_amount_entries) > 1:
+			raise Exception("This entry has multiple line items that do not have an amount:\r\n" + entry_node.to_string())
+		elif len(no_amount_entries) == 1:
+			entry_node.children[no_amount_entries[0]].amount = -1 * amount
+			entry_node.children[no_amount_entries[0]].amountCommodity = commodity
+		elif amount != 0:
+			raise Exception(("This entry has line items that do not balance (balance is: %.2f):\r\n" % amount) + entry_node.to_string())
+
 
 
 #-------------------------------------------------------------------
@@ -256,7 +291,7 @@ def mergeInvestmentEntries(root):
 		for transactionNode in entryNode.children:
 			count += 1
 
-			if transactionNode.virtual == "unbalanced" and transactionNode.account.find("Assets") >= 0 and transactionNode.account.find("Units") > 0 :
+			if transactionNode.entry_type == "virtual unbalanced" and transactionNode.account.find("Assets") >= 0 and transactionNode.account.find("Units") > 0 :
 				investmentsDict[transactionNode.account] = count
 		
 		for key in investmentsDict.keys():

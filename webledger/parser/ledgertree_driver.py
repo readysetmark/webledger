@@ -25,7 +25,7 @@ if __name__ == "__main__":
 	print "Here is the ledger tree:"
 	print "~"*80
 	f = open(output_filename,"w")
-	f.write(tree.toString())
+	f.write(tree.to_string())
 	f.close()
 	print(open(output_filename).read())
 

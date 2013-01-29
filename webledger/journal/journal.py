@@ -242,7 +242,7 @@ def ledgertree_to_journal(ledgertree_root):
 			entry = Entry(
 				header=header,
 				account=transaction_node.account,
-				entry_type=transaction_node.virtual,
+				entry_type=transaction_node.entry_type,
 				amount=(transaction_node.amount, transaction_node.amountCommodity),
 				value=
 					(transaction_node.value, transaction_node.valueCommodity)
