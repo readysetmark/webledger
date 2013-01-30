@@ -27,8 +27,7 @@ if __name__ == "__main__":
 	print "Here is the journal:"
 	print "~"*80
 	f = open(output_filename,"w")
-	for entry in journal:
-		f.write(entry.to_string() +"\n")
+	f.write(journal.to_string())
 	f.close()
 	print(open(output_filename).read())
 
