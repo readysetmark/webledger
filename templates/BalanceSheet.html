@@ -1,0 +1,21 @@
+<html>
+<head>
+	<title>Balance Sheet</title>
+	<link rel="stylesheet" type="text/css" href="report.css" />
+</head>
+<body>
+<div class="back"><a href="Index.html">Back to index</a></div>
+<div class="report_title">Balance Sheet</div>
+<div class="report_subtitle">As of {{report_date}}</div>
+<div class="report_body">
+
+<table>
+<tr><th>Balance</th><th>Account</th></tr>
+{{#lines}}
+<tr class="{{row_class}}"><td class="currency {{balance_class}}">{{balance}}</td><td style="{{account_style}}">{{account}}</td></tr>
+{{/lines}}
+</table>
+
+</body>
+</html>
+	
