@@ -7,52 +7,11 @@ Generates balance report data in a format that is easy to convert to JSON
 from decimal import *
 import webledger.journal.journal as journal
 
-
 #========================================================
-#	
-#========================================================
-
-def generate_balance_sheet_line(tuple):
-	"""
-	Generates the pystache dictionary for a balance sheet line
-	"""
-	account_style_format = "padding-left: {:d}px;"
-	padding_left_base = 8
-	indent_padding = 20
-
-	data = dict()
-	data["account"] = tuple[0]
-	data["balance"] = format_amount(tuple[2])
-	data["row_class"] = "grand_total" if len(tuple[0]) == 0 else ""
-	data["account_style"] = account_style_format.format(padding_left_base + (tuple[1] * indent_padding))
-
-	if len(tuple[0]) == 0:
-		data["balance_class"] = ""
-	elif tuple[2] > 0:
-		data["balance_class"] = "positive"
-	else:
-		data["balance_class"] = "negative"
-
-	return data
-
-
-def generate_balance_sheet_data(report_date, lines):
-	"""
-	Generates the pystache dictionary for a balance sheet report
-	"""
-	data = dict()
-	data["report_date"] = report_date.strftime("%B %d, %Y")
-	data["lines"] = lines
-	return data
-
-
-
-#========================================================
-#	Functions
+#	Balance Report Generator
 #========================================================
 
-
-def balance_report(journal_data, report_date):
+def generate_balance_report(journal_data, report_date):
 	"""
 	Returns balance report data up to report_date
 	"""
@@ -116,11 +75,9 @@ def balance_report(journal_data, report_date):
 		display_list.append((display_name, indent, tuple[1]))
 
 
-	lines = map(lambda tuple: generate_balance_sheet_line(tuple), display_list)
+	lines = map(lambda tuple: generate_balance_report_line(tuple), display_list)
 	
-	return generate_balance_sheet_data(report_date, lines)
-
-
+	return generate_balance_report_data(report_date, lines)
 
 
 def keep_tuple(tuple, tuple_list):
@@ -135,6 +92,48 @@ def keep_tuple(tuple, tuple_list):
 
 	return True
 
+
+#========================================================
+#	Balance Report Data Structure Functions
+#========================================================
+
+def generate_balance_report_line(tuple):
+	"""
+	Generates the pystache dictionary for a balance sheet line
+	"""
+	account_style_format = "padding-left: {:d}px;"
+	padding_left_base = 8
+	indent_padding = 20
+
+	data = dict()
+	data["account"] = tuple[0]
+	data["balance"] = format_amount(tuple[2])
+	data["row_class"] = "grand_total" if len(tuple[0]) == 0 else ""
+	data["account_style"] = account_style_format.format(padding_left_base + (tuple[1] * indent_padding))
+
+	if len(tuple[0]) == 0:
+		data["balance_class"] = ""
+	elif tuple[2] > 0:
+		data["balance_class"] = "positive"
+	else:
+		data["balance_class"] = "negative"
+
+	return data
+
+
+def generate_balance_report_data(report_date, lines):
+	"""
+	Generates the pystache dictionary for a balance sheet report
+	"""
+	data = dict()
+	data["report_date"] = report_date.strftime("%B %d, %Y")
+	data["lines"] = lines
+	return data
+
+
+#========================================================
+#	Utility Functions
+#========================================================
 
 def flatten_list(list):
 	"""
