@@ -51,6 +51,9 @@ Generate a fixed number of parameterized HTML reports from the ledger file.
 
 ### TODO
 
+-	income statement + refactoring balance report
+
+
 Reporting:
 -	Handling of value vs. amount and commodity (final_balances and monthly_totals)
 -	Reporting on account parents (option)

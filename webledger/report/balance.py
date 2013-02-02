@@ -22,7 +22,7 @@ def generate_balance_sheet_line(tuple):
 
 	data = dict()
 	data["account"] = tuple[0]
-	data["balance"] = "${:,.2f}".format(tuple[2])
+	data["balance"] = format_amount(tuple[2])
 	data["row_class"] = "grand_total" if len(tuple[0]) == 0 else ""
 	data["account_style"] = account_style_format.format(padding_left_base + (tuple[1] * indent_padding))
 
@@ -143,3 +143,18 @@ def flatten_list(list):
 	return [item 
 		for sublist in list
 			for item in sublist]
+
+
+def format_amount(amount):
+	"""
+	Formats an amount into a nice string for display.
+	"""
+	currency_format_string = "{:,.2f}"
+	amount_string = ""
+
+	if amount < 0:
+		amount_string = "($" + currency_format_string.format(amount * -1) + ")"
+	else:
+		amount_string = "$" + currency_format_string.format(amount)
+
+	return amount_string
