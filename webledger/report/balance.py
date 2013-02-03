@@ -88,7 +88,7 @@ def generate_balance_report(journal_data, parameters):
 			if len(parent_name) > 0:
 				display_name = display_name.replace(parent_name + ":", "")
 
-			display_list.append((display_name, indent, tuple[1]))
+			display_list.append((tuple[0], tuple[1], display_name, indent))
 
 		lines = map(lambda tuple: generate_balance_report_line(tuple), display_list)
 	
@@ -164,17 +164,11 @@ def generate_balance_report_line(tuple):
 	indent_padding = 20
 
 	data = dict()
-	data["account"] = tuple[0]
-	data["balance"] = format_amount(tuple[2])
+	data["account"] = tuple[2]
+	data["balance"] = format_amount(tuple[1])
 	data["row_class"] = "grand_total" if len(tuple[0]) == 0 else ""
-	data["account_style"] = account_style_format.format(padding_left_base + (tuple[1] * indent_padding))
-
-	if len(tuple[0]) == 0:
-		data["balance_class"] = ""
-	elif tuple[2] > 0:
-		data["balance_class"] = "positive"
-	else:
-		data["balance_class"] = "negative"
+	data["balance_class"] = tuple[0].split(":")[0].lower()
+	data["account_style"] = account_style_format.format(padding_left_base + (tuple[3] * indent_padding))
 
 	return data
 

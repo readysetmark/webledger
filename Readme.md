@@ -51,16 +51,11 @@ Generate a fixed number of parameterized HTML reports from the ledger file.
 
 ### TODO
 
--	set amount style based on account type. i.e. set css class to "assets"/"liabilities"...
--	can I get income before expenses?
+-	Net worth chart using d3.js
 
 
 Reporting:
--	Handling of value vs. amount and commodity (final_balances and monthly_totals)
--	Reporting on account parents (option)
--	Clean up reporting code
 -	Investigate chart output
--	Create an index page
 
 
 ### Main Tasks
@@ -69,7 +64,7 @@ Parsing Ledger File
 + Define ledger record types
 + Parse ledger file and build records
 	- (While continuing to use ledger file format) Detect investment transactions and merge transaction lines
-- Ensure transactions balance
++ Ensure transactions balance
 
 Commodity Prices
 - Identify commodities from ledger file

@@ -49,12 +49,12 @@ td.currency {
 	text-align: right;
 }
 
-td.positive {
+td.assets, td.income {
 	color: #1a1;
 	background: white;
 }
 
-td.negative {
+td.liabilities, td.expenses {
 	color: #f44;
 	background: white;
 }
