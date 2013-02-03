@@ -5,79 +5,137 @@ Generates balance report data in a format that is easy to convert to JSON
 """
 
 from decimal import *
+import datetime
+import re
 import webledger.journal.journal as journal
+
+#========================================================
+#	Balance Report Parameters class
+#========================================================
+
+class BalanceReportParameters:
+
+	def __init__(self, title="Balance",
+			accounts_with=None, exclude_accounts_with=None,
+			period_start=None, period_end=datetime.date.today()):
+		self.title = title
+		self.period_start = period_start
+		self.period_end = period_end
+		self.accounts_with = accounts_with
+		self.exclude_accounts_with = exclude_accounts_with
+
 
 #========================================================
 #	Balance Report Generator
 #========================================================
 
-def generate_balance_report(journal_data, report_date):
+def generate_balance_report(journal_data, parameters):
 	"""
-	Returns balance report data up to report_date
+	Returns balance report data based on report parameters provided
 	"""
+	lines = None
 
-	asset_accounts = {account 
-		for account in journal_data.all_accounts 
-		if "assets" in account.lower() and not "units" in account.lower()}
-
-	liability_accounts = {account
-		for account in journal_data.all_accounts
-		if "liabilities" in account.lower()}
-
-	# union the two sets
-	accounts = asset_accounts | liability_accounts
+	# filter accounts based on accounts to include/exclude
+	accounts = filter_accounts(journal_data, parameters)
 
 	# get list of all amounts that apply to each account
+	# within the period start/end parameters
 	all_account_amounts = flatten_list([
 			[(account, entry.amount[0], account == entry.account)
 			for account in entry.account_lineage]
 		for entry in journal_data.entries
-		if entry.account in accounts and entry.header.date <= report_date])
+		if entry.account in accounts and within_period(entry.header.date, parameters)])
 
-	# reduce the list to calculate account balances
-	all_account_balances = [
-		reduce((lambda t1, t2: (t1[0], t1[1]+t2[1])),
-			filter((lambda tuple: tuple[0] == account), all_account_amounts))
-		for account in accounts]
+	# reduce the list of accounts to ones that had activity in the report period
+	accounts = set([tuple[0] for tuple in all_account_amounts])
 
-	# filter to non-zero accounts only
-	nonzero_account_balances = filter(
-		(lambda tuple: tuple[1] != 0), all_account_balances)
+	if len(all_account_amounts) > 0:
+		# reduce the list to calculate account balances
+		all_account_balances = [
+			reduce((lambda t1, t2: (t1[0], t1[1]+t2[1])),
+				filter((lambda tuple: tuple[0] == account), all_account_amounts))
+			for account in accounts]
+
+		# filter to non-zero accounts only
+		nonzero_account_balances = filter(
+			(lambda tuple: tuple[1] != 0), all_account_balances)
+		
+		# filter parent accounts that only have one direct descendant
+		# these accounts will be the ones where there is another account that
+		# starts with the same name, but is longer and has the same amount
+		account_balance_list = filter(
+			(lambda tuple: keep_tuple(tuple, nonzero_account_balances)),
+			nonzero_account_balances)
+
+		# calculate total balance
+		total_balance = sum([tuple[1] for tuple in all_account_amounts if tuple[2]])
+
+		account_balance_list.sort(key=lambda tuple: tuple[0])
+		account_balance_list.append(("", total_balance))
+
+		# format account name for display
+		display_list = list()
+		for tuple in account_balance_list:
+			indent = 0
+			parent_name = ""
+			display_name = tuple[0]
+
+			for other in account_balance_list:
+				if display_name.startswith(other[0]) and display_name != other[0] and display_name[len(other[0])] == ":":
+					parent_name = other[0]
+					indent += 1
+
+			if len(parent_name) > 0:
+				display_name = display_name.replace(parent_name + ":", "")
+
+			display_list.append((display_name, indent, tuple[1]))
+
+		lines = map(lambda tuple: generate_balance_report_line(tuple), display_list)
 	
-	# filter parent accounts that only have one direct descendant
-	# these accounts will be the ones where there is another account that
-	# starts with the same name, but is longer and has the same amount
-	account_balance_list = filter(
-		(lambda tuple: keep_tuple(tuple, nonzero_account_balances)),
-		nonzero_account_balances)
-
-	# calculate total balance
-	total_balance = sum([tuple[1] for tuple in all_account_amounts if tuple[2]])
-
-	account_balance_list.sort(key=lambda tuple: tuple[0])
-	account_balance_list.append(("", total_balance))
-
-	# format account name for display
-	display_list = list()
-	for tuple in account_balance_list:
-		indent = 0
-		parent_name = ""
-		display_name = tuple[0]
-
-		for other in account_balance_list:
-			if display_name.startswith(other[0]) and display_name != other[0] and display_name[len(other[0])] == ":":
-				parent_name = other[0]
-				indent += 1
-
-		if len(parent_name) > 0:
-			display_name = display_name.replace(parent_name + ":", "")
-
-		display_list.append((display_name, indent, tuple[1]))
+	return generate_balance_report_data(parameters, lines)
 
 
-	lines = map(lambda tuple: generate_balance_report_line(tuple), display_list)
-	
-	return generate_balance_report_data(report_date, lines)
+#========================================================
+#	Balance Report Generator Helper Functions
+#========================================================
+
+def filter_accounts(journal_data, report_parameters):
+	"""
+	Get list of accounts to report on based on report_parameters.
+	"""
+	accounts = {account
+		for account in journal_data.all_accounts
+		if (report_parameters.accounts_with == None
+				or len(report_parameters.accounts_with) == 0 
+				or one_of_in(report_parameters.accounts_with, account))
+			and (report_parameters.exclude_accounts_with == None
+				or len(report_parameters.exclude_accounts_with) == 0
+				or not one_of_in(report_parameters.exclude_accounts_with, account))}
+
+	return accounts
+
+
+def one_of_in(terms, string):
+	"""
+	Returns true if string contains one of the terms in terms.
+	"""
+	regex = re.compile("|".join(terms), re.IGNORECASE)
+	return True if regex.search(string) else False
+
+
+def within_period(entry_date, parameters):
+	"""
+	Returns true if entry_date meets period start/end parameters
+	"""
+	within_period = True
+
+	if parameters.period_start != None and entry_date < parameters.period_start:
+		within_period = False
+
+	if parameters.period_end != None and entry_date > parameters.period_end:
+		within_period = False
+
+	return within_period
 
 
 def keep_tuple(tuple, tuple_list):
@@ -121,13 +179,25 @@ def generate_balance_report_line(tuple):
 	return data
 
 
-def generate_balance_report_data(report_date, lines):
+def generate_balance_report_data(parameters, lines):
 	"""
 	Generates the pystache dictionary for a balance sheet report
 	"""
+	date_format = "%B %d, %Y"
 	data = dict()
-	data["report_date"] = report_date.strftime("%B %d, %Y")
+	data["title"] = parameters.title
 	data["lines"] = lines
+
+	# generate report subtitle	
+	if parameters.period_start != None and parameters.period_end != None:
+		data["subtitle"] = "For the period of " + parameters.period_start.strftime(date_format) + " to " + parameters.period_end.strftime(date_format)
+	elif parameters.period_start != None:
+		data["subtitle"] = "Since "	+ parameters.period_start.strftime(date_format)
+	elif parameters.period_end != None:
+		data["subtitle"] = "Up to "	+ parameters.period_end.strftime(date_format)
+	else:
+		data["subtitle"] = "As of "	+ datetime.date.today().strftime("%B %d, %Y")
+
 	return data
 
 

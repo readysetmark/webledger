@@ -51,7 +51,8 @@ Generate a fixed number of parameterized HTML reports from the ledger file.
 
 ### TODO
 
--	income statement + refactoring balance report
+-	set amount style based on account type. i.e. set css class to "assets"/"liabilities"...
+-	can I get income before expenses?
 
 
 Reporting:
