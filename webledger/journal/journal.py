@@ -7,7 +7,6 @@ Contains the journal data classes:
 
 import string
 import datetime
-#import webledger.util.datetime as udt
 
 #========================================================
 #	Structs
@@ -81,22 +80,6 @@ class Entry:
 
 
 
-
-#========================================================
-#		Utility Functions
-#========================================================
-
-def add_amounts_to_dictionary(target_dict, amounts_dict):
-	"""
-	Adds the commodities and amounts in amounts_dict to target_dict.
-	"""
-	for commodity, amount in amounts_dict.items():
-		if commodity in target_dict:
-			target_dict[commodity] += amount
-		else:
-			target_dict[commodity] = amount
-
-
 #========================================================
 #	Journal
 #========================================================
@@ -134,88 +117,6 @@ class Journal:
 		for entry in self.entries:
 			s += entry.to_string() + "\n"
 		return s
-
-
-	# def get_monthly_totals(self):
-	# 	"""
-	# 	Returns a dictionary of {(account, month): {commodity: amount}} containing
-	# 	the sum of transaction amounts per month for each account.
-	# 	"""
-	# 	if self.__monthly_totals == None:
-	# 		self.__monthly_totals = dict()
-			
-	# 		for transaction in self.__transaction_list:
-	# 			transaction_month = dt.date(year=transaction.date.year, month=transaction.date.month, day=1)
-
-	# 			for account in transaction.account_lineage:
-	# 				key = (account, transaction_month)
-
-	# 				if key in self.__monthly_totals:
-	# 					amounts = self.__monthly_totals[key]
-	# 					if transaction.amount_commodity in amounts:
-	# 						amounts[transaction.amount_commodity] += transaction.amount
-	# 					else:
-	# 						amounts[transaction.amount_commodity] = transaction.amount
-	# 				else:
-	# 					amounts = dict()
-	# 					amounts[transaction.amount_commodity] = transaction.amount
-	# 					self.__monthly_totals[key] = amounts
-
-	# 	return self.__monthly_totals
-
-
-	# def get_final_balances(self):
-	# 	"""
-	# 	Returns a dictionary of {account: {commodity: amount}} containing the
-	# 	sum of all transaction amounts for each account.
-	# 	"""
-	# 	if self.__final_balances == None:
-	# 		self.__final_balances = dict()
-			
-	# 		for transaction in self.__transaction_list:
-	# 			for account in transaction.account_lineage:
-	# 				if account in self.__final_balances:
-	# 					amounts = self.__final_balances[account]
-	# 					if transaction.amount_commodity in amounts:
-	# 						amounts[transaction.amount_commodity] += transaction.amount
-	# 					else:
-	# 						amounts[transaction.amount_commodity] = transaction.amount
-	# 				else:
-	# 					amounts = dict()
-	# 					amounts[transaction.amount_commodity] = transaction.amount
-	# 					self.__final_balances[account] = amounts
-
-	# 	return self.__final_balances
-
-
-
-	# def get_balances_to_end_of_month(self, month):
-	# 	"""
-	# 	Returns a dictionary of {account: {commodity: amount}} containing the
-	# 	sum of all transaction amounts for each account up to the end of the
-	# 	specified month.
-	# 	"""
-	# 	if month in self.__monthly_balances:
-	# 		return self.__monthly_balances[month]
-	# 	else:
-	# 		balances = dict()
-	# 		monthly_totals = self.get_monthly_totals()
-			
-	# 		for key_account, key_month in monthly_totals.keys():
-	# 			key = (key_account, key_month)
-	# 			if key_month <= month:
-	# 				if key_account in balances:
-	# 					amounts = balances[key_account]
-	# 					add_amounts_to_dictionary(amounts, monthly_totals[key])
-	# 				else:
-	# 					amounts = dict()
-	# 					add_amounts_to_dictionary(amounts, monthly_totals[key])
-	# 					balances[key_account] = amounts
-
-	# 		self.__monthly_balances[month] = balances
-
-	# 		return balances
-
 
 
 #-------------------------------------------------------------------
