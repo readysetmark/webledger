@@ -48,6 +48,7 @@ def generate_report(template_path, output_path, data):
 
 def generate_static_reports(journal_data):
 	t1 = time.time()
+	index_links = list()
 	
 	# Balance Sheet
 	parameters = balance.BalanceReportParameters(
@@ -57,7 +58,12 @@ def generate_static_reports(journal_data):
 		period_start=None,
 		period_end=None)
 	data = balance.generate_balance_report(journal, parameters)
-	generate_report("templates\\BalanceSheet.html", "output\\BalanceSheet.html", data)
+	generate_report("templates\\BalanceReport.html", "output\\BalanceSheet.html", data)
+	link = dict()
+	link["url"] = "BalanceSheet.html"
+	link["title"] = "Balance Sheet"
+	index_links.append(link)
+
 
 	# Income Statement - Current Month
 	today = datetime.date.today()
@@ -72,7 +78,11 @@ def generate_static_reports(journal_data):
 			month=today.month,
 			day=calendar.monthrange(today.year, today.month)[1]))
 	data = balance.generate_balance_report(journal, parameters)
-	generate_report("templates\\BalanceSheet.html", "output\\IncomeStatement-CurrentMonth.html", data)
+	generate_report("templates\\BalanceReport.html", "output\\IncomeStatement-CurrentMonth.html", data)
+	link = dict()
+	link["url"] = "IncomeStatement-CurrentMonth.html"
+	link["title"] = "Income Statement - Current Month"
+	index_links.append(link)
 
 	# Income Statement - Previous Month
 	month_ago = date_add_months(today, -1)
@@ -87,7 +97,16 @@ def generate_static_reports(journal_data):
 			month=month_ago.month,
 			day=calendar.monthrange(month_ago.year, month_ago.month)[1]))
 	data = balance.generate_balance_report(journal, parameters)
-	generate_report("templates\\BalanceSheet.html", "output\\IncomeStatement-PreviousMonth.html", data)
+	generate_report("templates\\BalanceReport.html", "output\\IncomeStatement-PreviousMonth.html", data)
+	link = dict()
+	link["url"] = "IncomeStatement-PreviousMonth.html"
+	link["title"] = "Income Statement - Previous Month"
+	index_links.append(link)
+
+	# Index page
+	data = dict()
+	data["index_links"] = index_links
+	generate_report("templates\\Index.html", "output\\Index.html", data)
 
 	t2 = time.time()
 	print "Took %0.3f ms" % ((t2-t1)*1000.0)
