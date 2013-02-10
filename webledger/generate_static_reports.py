@@ -85,23 +85,26 @@ def generate_static_reports(journal_data):
 	index_links.append(link)
 
 	# Income Statement - Previous Month
-	month_ago = date_add_months(today, -1)
-	parameters = balance.BalanceReportParameters(
-		title="Income Statement",
-		accounts_with=["income","expenses"],
-		exclude_accounts_with=None,
-		period_start=datetime.date(year=month_ago.year,
-			month=month_ago.month,
-			day=1),
-		period_end=datetime.date(year=month_ago.year,
-			month=month_ago.month,
-			day=calendar.monthrange(month_ago.year, month_ago.month)[1]))
-	data = balance.generate_balance_report(journal, parameters)
-	generate_report("templates\\BalanceReport.html", "output\\IncomeStatement-PreviousMonth.html", data)
+	two_years_ago = date_add_months(today, -24)
+	two_years_ago = datetime.date(
+		year=two_years_ago.year,
+		month=two_years_ago.month,
+		day=calendar.monthrange(two_years_ago.year, two_years_ago.month)[0])
+	parameters = balance.MonthlySummaryParameters(
+		#title="Income Statement",
+		accounts_with=["assets","liabilities"],
+		exclude_accounts_with=["units"],
+		period_start=two_years_ago,
+		period_end=None)
+	data = balance.generate_monthly_summary(journal, parameters)
+	generate_report("templates\\LineChart.html", "output\\NetWorth.html", data)
 	link = dict()
-	link["url"] = "IncomeStatement-PreviousMonth.html"
-	link["title"] = "Income Statement - Previous Month"
+	link["url"] = "NetWorth.html"
+	link["title"] = "Net Worth"
 	index_links.append(link)
+
+	# Net Worth Chart
+
 
 	# Index page
 	data = dict()
@@ -112,13 +115,10 @@ def generate_static_reports(journal_data):
 	print "Took %0.3f ms" % ((t2-t1)*1000.0)
 
 
-if __name__ == "__main__":
-	#source_filename = "input\\test.dat"
-	#source_filename = "input\\ledger.dat"
-	source_filename = os.getenv("LEDGER_FILE", "input\\ledger.dat")
-	
-	print "Generating reports against %s." % source_filename
-
+def read_journal_data(source_filename):
+	"""
+	Read in and return the journal data
+	"""
 	t1 = time.time()
 	tree = ledgertree.parse_into_ledgertree(source_filename)
 	journal = j.ledgertree_to_journal(tree)
@@ -126,4 +126,15 @@ if __name__ == "__main__":
 
 	print "Parsed ledger file in %0.3f ms" % ((t2-t1)*1000.0)
 
+	return journal
+
+
+if __name__ == "__main__":
+	#source_filename = "input\\test.dat"
+	#source_filename = "input\\ledger.dat"
+	source_filename = os.getenv("LEDGER_FILE", "input\\ledger.dat")
+	
+	print "Generating reports against %s." % source_filename
+
+	journal = read_journal_data(source_filename)
 	generate_static_reports(journal)

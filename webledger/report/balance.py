@@ -6,6 +6,8 @@ Generates balance report data in a format that is easy to convert to JSON
 
 from decimal import *
 import datetime
+import calendar
+import json
 import re
 import webledger.journal.journal as journal
 
@@ -221,3 +223,60 @@ def format_amount(amount):
 		amount_string = "$" + currency_format_string.format(amount)
 
 	return amount_string
+
+
+#===============================================================================
+#===============================================================================
+# Monthly Summary
+
+
+class MonthlySummaryParameters:
+
+	def __init__(self, accounts_with=None, exclude_accounts_with=None,
+			period_start=None, period_end=datetime.date.today()):
+		self.period_start = period_start
+		self.period_end = period_end
+		self.accounts_with = accounts_with
+		self.exclude_accounts_with = exclude_accounts_with
+
+
+def generate_monthly_summary(journal_data, parameters):
+	"""
+	Returns a total per month
+	"""
+
+	# filter accounts based on accounts to include/exclude
+	accounts = filter_accounts(journal_data, parameters)
+
+	# get list of all amounts that apply to each account
+	# within the period start/end parameters
+	all_month_amounts = [
+		(datetime.date(year=entry.header.date.year,month=entry.header.date.month,day=calendar.monthrange(entry.header.date.year, entry.header.date.month)[1]), entry.amount[0])
+		for entry in journal_data.entries
+		if entry.account in accounts]
+
+	months = set([tuple[0] for tuple in all_month_amounts if within_period(tuple[0], parameters)])
+
+	monthly_amounts = [
+		reduce(lambda t1, t2: (month, t1[1] + t2[1]),
+			filter(lambda tuple: tuple[0] <= month, all_month_amounts))
+		for month in months]
+
+	monthly_amounts.sort(key=lambda tuple: tuple[0])
+
+	
+	tuples = list()
+	currency_format_string = "{:.2f}"
+	display_currency_format_string = "{:,.2f}"
+
+	for tuple in monthly_amounts:
+		d = dict()
+		d["date"] = tuple[0].strftime("%d-%b-%Y")
+		d["amount"] = currency_format_string.format(tuple[1])
+		d["hover"] = tuple[0].strftime("%b %Y") + ", " + format_amount(tuple[1])
+		tuples.append(d)
+
+	monthly_summary = dict()
+	monthly_summary["tuples"] = json.dumps(tuples, indent=4, separators=(',', ': '))
+	return monthly_summary
+

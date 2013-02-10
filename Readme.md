@@ -52,10 +52,7 @@ Generate a fixed number of parameterized HTML reports from the ledger file.
 ### TODO
 
 -	Net worth chart using d3.js
-
-
-Reporting:
--	Investigate chart output
+	[] combine onto balance sheet
 
 
 ### Main Tasks
