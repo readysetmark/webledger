@@ -85,6 +85,26 @@ def generate_static_reports(journal_data):
 	index_links.append(link)
 
 	# Income Statement - Previous Month
+	month_ago = date_add_months(today, -1)
+	parameters = balance.BalanceReportParameters(
+		title="Income Statement",
+		accounts_with=["income","expenses"],
+		exclude_accounts_with=None,
+		period_start=datetime.date(year=month_ago.year,
+			month=month_ago.month,
+			day=1),
+		period_end=datetime.date(year=month_ago.year,
+			month=month_ago.month,
+			day=calendar.monthrange(month_ago.year, month_ago.month)[1]))
+	data = balance.generate_balance_report(journal, parameters)
+	generate_report("templates\\BalanceReport.html", "output\\IncomeStatement-PreviousMonth.html", data)
+	link = dict()
+	link["url"] = "IncomeStatement-PreviousMonth.html"
+	link["title"] = "Income Statement - Previous Month"
+	index_links.append(link)
+	
+
+	# Net Worth Chart
 	two_years_ago = date_add_months(today, -24)
 	two_years_ago = datetime.date(
 		year=two_years_ago.year,
@@ -102,8 +122,6 @@ def generate_static_reports(journal_data):
 	link["url"] = "NetWorth.html"
 	link["title"] = "Net Worth"
 	index_links.append(link)
-
-	# Net Worth Chart
 
 
 	# Index page
