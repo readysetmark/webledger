@@ -46,11 +46,23 @@ def generate_report(template_path, output_path, data):
 	print "Generated %s" % (output_path)
 
 
+def render_report(template_path, data):
+	tf = open(template_path)
+	template = tf.read()
+	tf.close()
+
+	return pystache.render(template, data)
+
+
 def generate_static_reports(journal_data):
 	t1 = time.time()
 	index_links = list()
 	
 	# Balance Sheet
+	# Combines balance report for assets and liabilities with Net Worth chart
+	reports = dict()
+	reports["reports"] = list()
+	report = dict()
 	parameters = balance.BalanceReportParameters(
 		title="Balance Sheet",
 		accounts_with=["assets","liabilities"],
@@ -58,7 +70,26 @@ def generate_static_reports(journal_data):
 		period_start=None,
 		period_end=None)
 	data = balance.generate_balance_report(journal, parameters)
-	generate_report("templates\\BalanceReport.html", "output\\BalanceSheet.html", data)
+	report["report"] = render_report("templates\\BalanceReport.html", data)
+	reports["reports"].append(report)
+
+	report = dict()
+	two_years_ago = date_add_months(datetime.date.today(), -24)
+	two_years_ago = datetime.date(
+		year=two_years_ago.year,
+		month=two_years_ago.month,
+		day=calendar.monthrange(two_years_ago.year, two_years_ago.month)[0])
+	parameters = balance.MonthlySummaryParameters(
+		title="Net Worth",
+		accounts_with=["assets","liabilities"],
+		exclude_accounts_with=["units"],
+		period_start=two_years_ago,
+		period_end=None)
+	data = balance.generate_monthly_summary(journal, parameters)
+	report["report"] = render_report("templates\\LineChart.html", data)
+	reports["reports"].append(report)
+
+	generate_report("templates\\Master.html", "output\\BalanceSheet.html", reports)
 	link = dict()
 	link["url"] = "BalanceSheet.html"
 	link["title"] = "Balance Sheet"
@@ -66,6 +97,9 @@ def generate_static_reports(journal_data):
 
 
 	# Income Statement - Current Month
+	reports = dict()
+	reports["reports"] = list()
+	report = dict()
 	today = datetime.date.today()
 	parameters = balance.BalanceReportParameters(
 		title="Income Statement",
@@ -78,13 +112,19 @@ def generate_static_reports(journal_data):
 			month=today.month,
 			day=calendar.monthrange(today.year, today.month)[1]))
 	data = balance.generate_balance_report(journal, parameters)
-	generate_report("templates\\BalanceReport.html", "output\\IncomeStatement-CurrentMonth.html", data)
+	report["report"] = render_report("templates\\BalanceReport.html", data)
+	reports["reports"].append(report)
+
+	generate_report("templates\\Master.html", "output\\IncomeStatement-CurrentMonth.html", reports)
 	link = dict()
 	link["url"] = "IncomeStatement-CurrentMonth.html"
 	link["title"] = "Income Statement - Current Month"
 	index_links.append(link)
 
 	# Income Statement - Previous Month
+	reports = dict()
+	reports["reports"] = list()
+	report = dict()
 	month_ago = date_add_months(today, -1)
 	parameters = balance.BalanceReportParameters(
 		title="Income Statement",
@@ -97,33 +137,15 @@ def generate_static_reports(journal_data):
 			month=month_ago.month,
 			day=calendar.monthrange(month_ago.year, month_ago.month)[1]))
 	data = balance.generate_balance_report(journal, parameters)
-	generate_report("templates\\BalanceReport.html", "output\\IncomeStatement-PreviousMonth.html", data)
+	report["report"] = render_report("templates\\BalanceReport.html", data)
+	reports["reports"].append(report)
+
+	generate_report("templates\\Master.html", "output\\IncomeStatement-PreviousMonth.html", reports)
 	link = dict()
 	link["url"] = "IncomeStatement-PreviousMonth.html"
 	link["title"] = "Income Statement - Previous Month"
 	index_links.append(link)
 	
-
-	# Net Worth Chart
-	two_years_ago = date_add_months(today, -24)
-	two_years_ago = datetime.date(
-		year=two_years_ago.year,
-		month=two_years_ago.month,
-		day=calendar.monthrange(two_years_ago.year, two_years_ago.month)[0])
-	parameters = balance.MonthlySummaryParameters(
-		title="Net Worth",
-		accounts_with=["assets","liabilities"],
-		exclude_accounts_with=["units"],
-		period_start=two_years_ago,
-		period_end=None)
-	data = balance.generate_monthly_summary(journal, parameters)
-	generate_report("templates\\LineChart.html", "output\\NetWorth.html", data)
-	link = dict()
-	link["url"] = "NetWorth.html"
-	link["title"] = "Net Worth"
-	index_links.append(link)
-
-
 	# Index page
 	data = dict()
 	data["index_links"] = index_links

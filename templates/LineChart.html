@@ -1,11 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>{{title}}</title>
-  <link rel="stylesheet" type="text/css" href="linechart.css" />
-</head>
-<body>
+
+<div class="report_title">{{title}}</div>
+
+<div id="chart"></div>
 <script src="js/d3.v3.min.js"></script>
 <script>
 
@@ -37,7 +33,7 @@ var line = d3.svg.line()
     .x(function(d) { return x(d.date); })
     .y(function(d) { return y(d.amount); });
 
-var svg = d3.select("body").append("svg")
+var svg = d3.select("#chart").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
@@ -137,6 +133,4 @@ d3.json(json, function(error, data) {
         hover.style("display", "none");
     })
 /*});*/
-
 </script>
-</html>
