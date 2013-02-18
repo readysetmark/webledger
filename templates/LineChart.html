@@ -1,43 +1,10 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
-<style>
-
-body {
-  font: 10px sans-serif;
-}
-
-.axis path,
-.axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-}
-
-.line {
-  fill: none;
-  stroke: steelblue;
-  stroke-width: 1.5px;
-}
-
-.node {
-  r: 5;
-  stroke: steelblue;
-  fill: steelblue;
-  stroke-width: 1.5px;
-}
-
-.node-hover-rect {
-  fill: #111;
-  opacity: 0.9;
-}
-
-.node-hover-text {
-  font-family: "Source Sans Pro", "Helvetica", Arial, sans-serif;
-  font-size: 12px;
-  fill: #eee;
-}
-
-</style>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{{title}}</title>
+  <link rel="stylesheet" type="text/css" href="linechart.css" />
+</head>
 <body>
 <script src="js/d3.v3.min.js"></script>
 <script>
@@ -172,3 +139,4 @@ d3.json(json, function(error, data) {
 /*});*/
 
 </script>
+</html>

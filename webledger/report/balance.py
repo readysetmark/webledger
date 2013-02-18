@@ -232,8 +232,10 @@ def format_amount(amount):
 
 class MonthlySummaryParameters:
 
-	def __init__(self, accounts_with=None, exclude_accounts_with=None,
+	def __init__(self, title="Monthly Summary", 
+			accounts_with=None, exclude_accounts_with=None,
 			period_start=None, period_end=datetime.date.today()):
+		self.title = title
 		self.period_start = period_start
 		self.period_end = period_end
 		self.accounts_with = accounts_with
@@ -251,7 +253,8 @@ def generate_monthly_summary(journal_data, parameters):
 	# get list of all amounts that apply to each account
 	# within the period start/end parameters
 	all_month_amounts = [
-		(datetime.date(year=entry.header.date.year,month=entry.header.date.month,day=calendar.monthrange(entry.header.date.year, entry.header.date.month)[1]), entry.amount[0])
+		#(datetime.date(year=entry.header.date.year,month=entry.header.date.month,day=calendar.monthrange(entry.header.date.year, entry.header.date.month)[1]), entry.amount[0])
+		(datetime.date(year=entry.header.date.year,month=entry.header.date.month,day=1), entry.amount[0])
 		for entry in journal_data.entries
 		if entry.account in accounts]
 
@@ -273,10 +276,11 @@ def generate_monthly_summary(journal_data, parameters):
 		d = dict()
 		d["date"] = tuple[0].strftime("%d-%b-%Y")
 		d["amount"] = currency_format_string.format(tuple[1])
-		d["hover"] = tuple[0].strftime("%b %Y") + ", " + format_amount(tuple[1])
+		d["hover"] = tuple[0].strftime("%b %Y") + ": " + format_amount(tuple[1])
 		tuples.append(d)
 
 	monthly_summary = dict()
+	monthly_summary["title"] = parameters.title
 	monthly_summary["tuples"] = json.dumps(tuples, indent=4, separators=(',', ': '))
 	return monthly_summary
 

@@ -111,7 +111,7 @@ def generate_static_reports(journal_data):
 		month=two_years_ago.month,
 		day=calendar.monthrange(two_years_ago.year, two_years_ago.month)[0])
 	parameters = balance.MonthlySummaryParameters(
-		#title="Income Statement",
+		title="Net Worth",
 		accounts_with=["assets","liabilities"],
 		exclude_accounts_with=["units"],
 		period_start=two_years_ago,
