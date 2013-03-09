@@ -1,7 +1,5 @@
-Webledger v0.0.5
-================
-
-[2013/01/27] Most of this is old and needs to be revised....
+Webledger v0.1
+==============
 
 Objective
 ---------
@@ -27,7 +25,29 @@ Parsing portion is largely based on the tutorial by Stephen Ferg available at
 Dependencies:
 
 *	Python v2.7.2
-*	Pystache v0.5.0
+*	Virtualenv v1.8.4
+*	Flask v0.9
+*	Pystache v0.5.0 [to be removed]
+
+
+Project Setup
+-------------
+
+Make sure virtualenv is installed using pip:
+
+	pip install virtualenv
+
+Within the project folder, create a new virtual environment:
+
+	virtualenv venv
+
+Activate the virtual environment:
+
+	venv\scripts\activate
+
+Install flask:
+
+	pip install flask
 
 
 
@@ -43,75 +63,70 @@ to adding investment/commodity support.
 
 
 Phase 1 Implementation (Reporting)
-----------------------------------
+----------------------
 
 ### Objective
 
-Generate a fixed number of parameterized HTML reports from the ledger file.
-
-### TODO
-
--	Net worth chart using d3.js
-	[] combine onto balance sheet
-
+*	Replace the ledger bal and reg commandline options with a web interface.
+*	Provide some basic reporting like net worth, income vs expenses, ...
+*	See http://bugsplat.info/static/stan-demo-report.html for some examples
 
 ### Main Tasks
 
 Parsing Ledger File
-+ Define ledger record types
-+ Parse ledger file and build records
-	- (While continuing to use ledger file format) Detect investment transactions and merge transaction lines
-+ Ensure transactions balance
+[x] Read/Parse ledger file
+[x] Autobalance transactions
+[x] Ensure transactions balance
+
+Initial Static Balance Reports:
+[x] Assets vs Liabilities, ie Net Worth
+[x] Income Statement (current & previous month)
+[x] Net Worth chart
+
+Dynamic Website:
+[] Convert all existing reports to render dynamically instead of a static page
+
+Register Report
+[] Register report with parameters (ie accounts, date range)
+[] Accounts Payable vs Accounts Receivable
+
+Charts
+[] Income Statement chart (monthly, over time)
+
+Expenses
+[] Average in last 3 months, in last year
+[] Burn rate - using last 3 months expenses average, how long until savings is gone?
+[] Top Expenses over last period
+
+
+
+Phase 2 Implementation (Commodities)
+----------------------
 
 Commodity Prices
-- Identify commodities from ledger file
-- Store commodity prices in a local cache
-- Fetch prices from internet and add to cache
-	- Prices should go from first date in ledger file to today
+[] (While continuing to use ledger file format) Detect investment transactions and merge transaction lines
+[] Identify commodities from ledger file
+[] Fetch prices from internet and add to cache
+	[] Store commodity prices in a local cache
+	[] Prices should go from first date in ledger file to today
 
-Rendering HTML Tables and Charts
-- This is where I need to do some experimentation and find a good HTML 
-templating engine
-- tables for tabular data
-- plot charts using...? gnuplot? jqplot? flot?
-- using jquery datatables and jqplot?
-- twitter bootstrap?
+Net Worth
+[] Update chart with book value line and actual line
 
-Reporting
-- (see http://bugsplat.info/static/stan-demo-report.html for some examples)
-- Balance Sheet -- assets vs liabilities [table] this is basically net worth (if summed) -- should be over time
-- Income statement (Income vs Expenses)
-	Do I want to have parent levels (i.e. Expenses:Food)? 
-	Eg:
-							2 Years Ago, 1 Year Ago, 3 Months Ago, 2 Months Ago, Last Month, This Month, Total
-		Income
-			*
-			Total
-		Expense
-			*
-			Total
-		Net Income
-- Expenses over $100 this month/last month
-- Expenses average in last 3 months, in last year
-- Burn rate: using 3 month average, how many months before savings is gone?
-- Expenses vs budget (will need to be defined elsewhere?)
-- Savings projections?
-- Investments		
-- Overall Portfolio Return (see NotesOnInvestments.txt)
-- Rebalance spreadsheet (for rebalancing investments to proper allocation)
-- Expected T3s/T5s
-	
+Balance Sheet
+[] Update Net Worth sheet with actual vs book value columns
 
+Portfolio
+[] Overall portfolio return and per investment
+[] Expected T3s/T5s to receive for last year (ie had distribution)
+[] Rebalancing calculator - for rebalancing investments to proper allocation
 
-Phase 2 Ideas (Query)
--------------
-
-- Replace bal and reg functions from ledger command line
-- Move away from ledger file format
-	- Define my own that handles investments better
 
 
 Phase 3 Ideas (Entry)
 -------------
 
+- Replace bal and reg functions from ledger command line
+- Move away from ledger file format
+	- Define my own that handles investments better
 - Entry/editing of transactions
