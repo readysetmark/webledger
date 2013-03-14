@@ -85,6 +85,10 @@ Initial Static Balance Reports:
 
 Dynamic Website:
 [] Convert all existing reports to render dynamically instead of a static page
+	[] Get barebones flask working
+	[] map /networth, /currentincomestatement, /previousincomestatement to current pages
+	[] make a /balance that takes parameters to do the above three pages
+	[] what to do with chart...?
 
 Register Report
 [] Register report with parameters (ie accounts, date range)
