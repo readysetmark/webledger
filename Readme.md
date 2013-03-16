@@ -24,10 +24,9 @@ Parsing portion is largely based on the tutorial by Stephen Ferg available at
 
 Dependencies:
 
-*	Python v2.7.2
+*	Python v2.7.3
 *	Virtualenv v1.8.4
 *	Flask v0.9
-*	Pystache v0.5.0 [to be removed]
 
 
 Project Setup
