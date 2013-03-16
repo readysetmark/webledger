@@ -86,7 +86,7 @@ Dynamic Website:
 [] Convert all existing reports to render dynamically instead of a static page
 	[x] Get barebones flask working
 	[x] map /, /balancesheet, /currentincomestatement, /previousincomestatement to current pages
-	[] fix html/css (use proper elements ie h1, ul, etc...)
+	[x] fix html/css (use proper elements ie h1, ul, etc...)
 	[] make a /balance that takes parameters to do the above three pages
 	[] what to do with chart...?
 

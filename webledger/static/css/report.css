@@ -3,25 +3,25 @@ body {
 	font: 1em Arial, sans-serif;
 }
 
-div.report_title {
+h1 {
 	font: bold 2.5em Arial, sans-serif;
 	text-align: center;
 }
 
-div.report_subtitle {
+h2 {
     font: 1.2em Arial, sans-serif;
     text-align: center;
 }
 
-div.index_body {
+nav ul {
+	width: 40%;
+	margin-left: auto;
+	margin-right: auto;
 	font: 1.5em Arial, sans-serif;
-	text-align: center;
-	padding: 1px;
 }
 
-div.back {
-	font: bold 0.8em Arial, sans-serif;
-	text-align: left;
+nav li {
+	padding: 2px 0;
 }
 
 table {
@@ -62,9 +62,4 @@ td.liabilities, td.expenses {
 tr.grand_total {
     border-top: 1px solid black;
 	font-weight: bold;
-}
-
-tr.empty {
-	color: white;
-	background: white;
 }
