@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Webledger Index</title>
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/report.css') }}" />
+	</head>
+	<body>
+	<div class="report_title">{{ page['title'] }}</div>
+	<div class="index_body">
+
+	{% for report in page['reports'] %}
+		<p><a href="{{ url_for(report['path']) }}">{{ report['title'] }}</a></p>
+	{% endfor %}
+
+	</div>
+	</body>
+</html>
+	
