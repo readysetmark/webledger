@@ -2,175 +2,215 @@
 <html>
 <head>
 	<title>{{ page['title'] }}</title>
-	<link rel="stylesheet" href="{{ url_for('static', filename='css/report.css') }}" />
-	<link rel="stylesheet" href="{{ url_for('static', filename='css/linechart.css') }}" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/report.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/linechart.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" media="screen">
+	<script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
 </head>
 <body>
-	<nav>
-		<a href="{{ url_for('index') }}">Back to index</a>
-	</nav>
+	<!-- Navbar -->
+	<div class="navbar navbar-inverse navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container-fluid">
+				<a class="brand" href="{{ url_for('index') }}">Webledger</a>
 
-	<section>
-		<header>
-			<h1>{{ page['data']['title'] }}</h1>
-			<h2>{{ page['data']['subtitle'] }}</h2>
-		</header>
-		<section>
-			<table>
-			<tr><th>Balance</th><th>Account</th></tr>
-		{% for line in page['data']['lines'] %}
-			<tr class="{{ line['row_class'] }}">
-				<td class="currency {{ line['balance_class'] }}">{{ line['balance'] }}</td>
-				<td style="{{ line['account_style'] }}">{{ line['account'] }}</td>
-			</tr>
-		{% endfor %}
-			</table>
-		</section>
-	</section>
+				<form class="navbar-form pull-right">
+					<input type="text" class="span8" placeholder="Command">
+					<button type="submit" class="btn btn-primary">Submit</button>
+				</form>
+			</div>
+		</div>
+	</div>
+
 	
-{% if 'chartdata' in page %}
-	<section>
-		<header>
-			<h1>{{ page['chartdata']['title'] }}</h1>
-		</header>
-		<section>
-			<div id="chart"></div>
-		</section>
-	</section>
+	<div class="container-fluid">
+		<div class="row-fluid">
+			<!-- Sidebar Navigation -->
+			<nav class="span2">
+				<div class="well" style="padding: 8px 0;">
+					<ul class="nav nav-list">
+						<li class="nav-header">Reports</li>
+					{% for nav in page['navlist'] %}
+						<li><a href="{{ url_for(nav['path']) }}">{{ nav['title'] }}</a></li>
+					{% endfor %}
+					</ul>
+				</div>
+			</nav>
 
-	<script src="{{ url_for('static', filename='js/d3.v3.min.js') }}"></script>
-	<script>
+			<!-- Report -->
+			<div class="span10">
+				<section>
+					<header class="page-header">
+						<h1>
+							{{ page['data']['title'] }}<br>
+							<small>{{ page['data']['subtitle'] }}</small>
+						</h1>
+					</header>
+					<section class="span4">
+						<table class="table table-hover table-condensed">
+							<thead>
+								<tr><th>Balance</th><th>Account</th></tr>
+							</thead>
+							<tbody>
+							{% for line in page['data']['lines'] %}
+								<tr class="{{ line['row_class'] }}">
+									<td class="currency {{ line['balance_class'] }}">{{ line['balance'] }}</td>
+									<td style="{{ line['account_style'] }}">{{ line['account'] }}</td>
+								</tr>
+							{% endfor %}
+							</tbody>
+						</table>
+					</section>
+				</section>
+			
+			{% if 'chartdata' in page %}
+				<section>
+					<header>
+						<h1>{{ page['chartdata']['title'] }}</h1>
+					</header>
+					<section>
+						<div id="chart"></div>
+					</section>
+				</section>
 
-	var data = {{ page['chartdata']['tuples']|safe }} 
 
-	var margin = {top: 20, right: 20, bottom: 30, left: 50},
-	    width = 600 - margin.left - margin.right,
-	    height = 400 - margin.top - margin.bottom;
+				<script src="{{ url_for('static', filename='js/d3.v3.min.js') }}"></script>
+				<script>
 
-	var parseDate = d3.time.format("%d-%b-%Y").parse;
+				var data = {{ page['chartdata']['tuples']|safe }} 
 
-	var x = d3.time.scale()
-	    .range([0, width]);
+				var margin = {top: 20, right: 20, bottom: 30, left: 50},
+				    width = 600 - margin.left - margin.right,
+				    height = 400 - margin.top - margin.bottom;
 
-	var y = d3.scale.linear()
-	    .range([height, 0]);
+				var parseDate = d3.time.format("%d-%b-%Y").parse;
 
-	var xAxis = d3.svg.axis()
-	    .scale(x)
-	    .ticks(d3.time.months, 3)
-	    .tickFormat(d3.time.format("%b %y"))
-	    .orient("bottom");
+				var x = d3.time.scale()
+				    .range([0, width]);
 
-	var yAxis = d3.svg.axis()
-	    .scale(y)
-	    .orient("left");
+				var y = d3.scale.linear()
+				    .range([height, 0]);
 
-	var line = d3.svg.line()
-	    .x(function(d) { return x(d.date); })
-	    .y(function(d) { return y(d.amount); });
+				var xAxis = d3.svg.axis()
+				    .scale(x)
+				    .ticks(d3.time.months, 3)
+				    .tickFormat(d3.time.format("%b %y"))
+				    .orient("bottom");
 
-	var svg = d3.select("#chart").append("svg")
-	    .attr("width", width + margin.left + margin.right)
-	    .attr("height", height + margin.top + margin.bottom)
-	  .append("g")
-	    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+				var yAxis = d3.svg.axis()
+				    .scale(y)
+				    .orient("left");
 
-	/*
-	d3.json(json, function(error, data) {
-	  data.forEach(function(d) {
-	    d.date = parseDate(d.date);
-	    d.close = +d.close;
-	  });
-	*/
-	  data.forEach(function(d) {
-	    d.date = parseDate(d.date);
-	  });
+				var line = d3.svg.line()
+				    .x(function(d) { return x(d.date); })
+				    .y(function(d) { return y(d.amount); });
 
-	  x.domain(d3.extent(data, function(d) { return d.date; }))
-	    .nice(d3.time.month);
-	  y.domain(d3.extent(data, function(d) { return d.amount; }));
+				var svg = d3.select("#chart").append("svg")
+				    .attr("width", width + margin.left + margin.right)
+				    .attr("height", height + margin.top + margin.bottom)
+				  .append("g")
+				    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-	  svg.append("g")
-	      .attr("class", "x axis")
-	      .attr("transform", "translate(0," + height + ")")
-	      .call(xAxis);
+				/*
+				d3.json(json, function(error, data) {
+				  data.forEach(function(d) {
+				    d.date = parseDate(d.date);
+				    d.close = +d.close;
+				  });
+				*/
+				  data.forEach(function(d) {
+				    d.date = parseDate(d.date);
+				  });
 
-	  svg.append("g")
-	      .attr("class", "y axis")
-	      .call(yAxis)
-	    .append("text")
-	      .attr("transform", "rotate(-90)")
-	      .attr("y", 6)
-	      .attr("dy", ".71em")
-	      .style("text-anchor", "end")
-	      .text("Amount ($)");
+				  x.domain(d3.extent(data, function(d) { return d.date; }))
+				    .nice(d3.time.month);
+				  y.domain(d3.extent(data, function(d) { return d.amount; }));
 
-	  svg.append("path")
-	      .datum(data)
-	      .attr("class", "line")
-	      .attr("d", line);
+				  svg.append("g")
+				      .attr("class", "x axis")
+				      .attr("transform", "translate(0," + height + ")")
+				      .call(xAxis);
 
-	  var node = svg.append("g")
-	      .attr("class", "nodes")
-	      .selectAll("circle")
-	      .data(data)
-	      .enter()
-	      .append("circle")
-	      .attr("class", "node")
-	      .attr("r", 2)
-	      .attr("cx", function(d) { return x(d.date); })
-	      .attr("cy", function(d) { return y(d.amount); });
+				  svg.append("g")
+				      .attr("class", "y axis")
+				      .call(yAxis)
+				    .append("text")
+				      .attr("transform", "rotate(-90)")
+				      .attr("y", 6)
+				      .attr("dy", ".71em")
+				      .style("text-anchor", "end")
+				      .text("Amount ($)");
 
-	  var hover = svg.append("g")
-	      .attr("class", "node-hover")
-	      .style("display", "none");
+				  svg.append("path")
+				      .datum(data)
+				      .attr("class", "line")
+				      .attr("d", line);
 
-	  var hover_rect = hover.append("rect")
-	      .attr("class", "node-hover-rect")
-	      .attr("rx", "5")
-	      .attr("ry", "5")
-	      .attr("width", "120")
-	      .attr("height", "30");
+				  var node = svg.append("g")
+				      .attr("class", "nodes")
+				      .selectAll("circle")
+				      .data(data)
+				      .enter()
+				      .append("circle")
+				      .attr("class", "node")
+				      .attr("r", 2)
+				      .attr("cx", function(d) { return x(d.date); })
+				      .attr("cy", function(d) { return y(d.amount); });
 
-	  var hover_text = hover.append("text")
-	      .attr("class", "node-hover-text")
-	      .attr("transform", "translate(10,20)");
+				  var hover = svg.append("g")
+				      .attr("class", "node-hover")
+				      .style("display", "none");
 
-	  node.on("mouseover", function(d) {
-	        var text_width = 120;
-	        var lines = 1;
+				  var hover_rect = hover.append("rect")
+				      .attr("class", "node-hover-rect")
+				      .attr("rx", "5")
+				      .attr("ry", "5")
+				      .attr("width", "120")
+				      .attr("height", "30");
 
-	        hover_text.selectAll("tspan").remove();
-	        var name = hover_text.append("tspan")
-	            .attr("class", "node-hover-text-name")
-	            .attr("x", "0")
-	            .text(d.hover);
+				  var hover_text = hover.append("text")
+				      .attr("class", "node-hover-text")
+				      .attr("transform", "translate(10,20)");
 
-	        text_width = name.node().getComputedTextLength();
+				  node.on("mouseover", function(d) {
+				        var text_width = 120;
+				        var lines = 1;
 
-	        hover_rect
-	            .attr("width", text_width + 20);
+				        hover_text.selectAll("tspan").remove();
+				        var name = hover_text.append("tspan")
+				            .attr("class", "node-hover-text-name")
+				            .attr("x", "0")
+				            .text(d.hover);
 
-	        var translate_x = x(d.date) + 10;
-	        if (translate_x + text_width + 20 > width) {
-	          translate_x = x(d.date) - 30 - text_width;
-	        } 
+				        text_width = name.node().getComputedTextLength();
 
-	        var translate_y = y(d.amount) + 10;
-	        if (translate_y + 30 > height) {
-	          translate_y = y(d.amount) - 40;
-	        }
+				        hover_rect
+				            .attr("width", text_width + 20);
 
-	        hover
-	            .attr("transform", "translate(" + translate_x + ", " + translate_y +")")
-	            .style("display", "block");
-	    })
-	    .on("mouseout", function(d) {
-	        hover.style("display", "none");
-	    })
-	/*});*/
-	</script>
-{% endif %}
+				        var translate_x = x(d.date) + 10;
+				        if (translate_x + text_width + 20 > width) {
+				          translate_x = x(d.date) - 30 - text_width;
+				        } 
+
+				        var translate_y = y(d.amount) + 10;
+				        if (translate_y + 30 > height) {
+				          translate_y = y(d.amount) - 40;
+				        }
+
+				        hover
+				            .attr("transform", "translate(" + translate_x + ", " + translate_y +")")
+				            .style("display", "block");
+				    })
+				    .on("mouseout", function(d) {
+				        hover.style("display", "none");
+				    })
+				/*});*/
+				</script>
+			{% endif %}
+			</div>
+		</div>
+	</div>
 
 </body>
 </html>

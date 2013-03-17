@@ -23,23 +23,9 @@ app.debug = True
 
 @app.route("/")
 def index():
-	reports = [
-		{
-			"path": "balancesheet",
-			"title": "Balance Sheet"
-		},
-		{
-			"path": "currentincomestatement",
-			"title": "Income Statement - Current Month"
-		},
-		{
-			"path": "previousincomestatement",
-			"title": "Income Statement - Previous Month"
-		}
-	]
 	page = {
 		"title": "Webledger Reports",
-		"reports": reports
+		"reports": get_navlist()
 	}
 	return render_template("index.html", page=page)
 
@@ -70,7 +56,8 @@ def balancesheet():
 	page = {
 		"title": "Balance Sheet",
 		"data": data,
-		"chartdata": chartdata
+		"chartdata": chartdata,
+		"navlist": get_navlist()
 	}
 	return render_template("balance.html", page=page)
 
@@ -92,7 +79,8 @@ def currentincomestatement():
 
 	page = {
 		"title": "Income Statement - Current Month", 
-		"data": data
+		"data": data,
+		"navlist": get_navlist()
 	}
 	return render_template("balance.html", page=page)
 
@@ -115,7 +103,8 @@ def previousincomestatement():
 
 	page = {
 		"title": "Income Statement - Previous Month",
-		"data": data
+		"data": data,
+		"navlist": get_navlist()
 	}
 
 	return render_template("balance.html", page=page)
@@ -144,6 +133,26 @@ def date_add_months(date, num_months):
 
 	return datetime.date(year=year, month=month, day=day)
 
+
+
+def get_navlist():
+	"""
+	Get list of reports to include in the navigation list
+	"""
+	return [
+		{
+			"path": "balancesheet",
+			"title": "Balance Sheet"
+		},
+		{
+			"path": "currentincomestatement",
+			"title": "Income Statement - Current Month"
+		},
+		{
+			"path": "previousincomestatement",
+			"title": "Income Statement - Previous Month"
+		}
+	]
 
 
 ################################################

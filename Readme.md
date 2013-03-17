@@ -87,11 +87,14 @@ Dynamic Website:
 	[x] Get barebones flask working
 	[x] map /, /balancesheet, /currentincomestatement, /previousincomestatement to current pages
 	[x] fix html/css (use proper elements ie h1, ul, etc...)
-	[] make a /balance that takes parameters to do the above three pages
-	[] what to do with chart...?
+	[] start using bootstrap
+		- need to make the chart it's own page for now
+	[] turn into "one page" app that takes GET parameters for what to show (with command bar)
+	[] watch ledger file and reload on change
 
 Register Report
 [] Register report with parameters (ie accounts, date range)
+	[] link to from balance reports
 [] Accounts Payable vs Accounts Receivable
 
 Charts

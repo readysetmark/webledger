@@ -1,51 +1,17 @@
 
 body {
-	font: 1em Arial, sans-serif;
+	padding-top: 60px;
 }
 
-h1 {
-	font: bold 2.5em Arial, sans-serif;
-	text-align: center;
+/*.table {
+	width: 40% !important;
+}
+*/
+.table th {
+	text-align: center !important;
 }
 
-h2 {
-    font: 1.2em Arial, sans-serif;
-    text-align: center;
-}
-
-nav ul {
-	width: 40%;
-	margin-left: auto;
-	margin-right: auto;
-	font: 1.5em Arial, sans-serif;
-}
-
-nav li {
-	padding: 2px 0;
-}
-
-table {
-    border: 0px solid black;
-	border-collapse: collapse;
-	margin-top: 5px;
-	margin-left: auto;
-	margin-right: auto;
-}
-
-th, td {
-	padding-top: 2px;
-	padding-bottom: 2px;
-	padding-left: 8px;
-	padding-right: 8px;
-	border: 0px solid black;
-}
-
-th {
-	color: white;
-	background: #404040;
-}
-
-td.currency {
+.table .currency {
 	text-align: right;
 }
 
