@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>{{ page['title'] }}</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/report.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" media="screen">
+	{% block css_include %}
+	{% endblock css_include %}
+	<script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+	{% block js_include %}
+	{% endblock js_include %}
+</head>
+<body>
+	<!-- Navbar -->
+	<div class="navbar navbar-inverse navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container-fluid">
+				<a class="brand" href="{{ url_for('balancesheet') }}">Webledger</a>
+
+				<form class="navbar-form pull-right" name="command" action="{{ url_for('test') }}" method="get">
+					<input type="text" name="cmd" class="span8" placeholder="Command">
+					<button type="submit" class="btn btn-primary">Submit</button>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	
+	<div class="container-fluid">
+		<div class="row-fluid">
+			<!-- Sidebar Navigation -->
+			<nav class="span2">
+				<div class="well" style="padding: 8px 0;">
+					<ul class="nav nav-list">
+						<li class="nav-header">Reports</li>
+					{% for nav in page['navlist'] %}
+						<li><a href="{{ url_for(nav['path']) }}">{{ nav['title'] }}</a></li>
+					{% endfor %}
+					</ul>
+				</div>
+			</nav>
+
+			<!-- Report -->
+			<div class="span10">
+				{% block content %}
+				<p>No content has been defined.</p>
+				{% endblock content %}
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

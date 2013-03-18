@@ -104,6 +104,9 @@ Expenses
 [] Burn rate - using last 3 months expenses average, how long until savings is gone?
 [] Top Expenses over last period
 
+Documentation
+[] github wiki
+	[] how to use / setup
 
 
 Phase 2 Implementation (Commodities)

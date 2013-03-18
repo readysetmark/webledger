@@ -1,70 +1,27 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title>{{ page['title'] }}</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="{{ url_for('static', filename='css/report.css') }}">
-	<link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" media="screen">
-	<script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
-</head>
-<body>
-	<!-- Navbar -->
-	<div class="navbar navbar-inverse navbar-fixed-top">
-		<div class="navbar-inner">
-			<div class="container-fluid">
-				<a class="brand" href="{{ url_for('balancesheet') }}">Webledger</a>
+{% extends "layout.html" %}
 
-				<form class="navbar-form pull-right">
-					<input type="text" class="span8" placeholder="Command">
-					<button type="submit" class="btn btn-primary">Submit</button>
-				</form>
-			</div>
-		</div>
-	</div>
-
-	
-	<div class="container-fluid">
-		<div class="row-fluid">
-			<!-- Sidebar Navigation -->
-			<nav class="span2">
-				<div class="well" style="padding: 8px 0;">
-					<ul class="nav nav-list">
-						<li class="nav-header">Reports</li>
-					{% for nav in page['navlist'] %}
-						<li><a href="{{ url_for(nav['path']) }}">{{ nav['title'] }}</a></li>
-					{% endfor %}
-					</ul>
-				</div>
-			</nav>
-
-			<!-- Report -->
-			<div class="span10">
-				<section>
-					<header class="page-header">
-						<h1>
-							{{ page['data']['title'] }}<br>
-							<small>{{ page['data']['subtitle'] }}</small>
-						</h1>
-					</header>
-					<section class="span4">
-						<table class="table table-hover table-condensed">
-							<thead>
-								<tr><th>Balance</th><th>Account</th></tr>
-							</thead>
-							<tbody>
-							{% for line in page['data']['lines'] %}
-								<tr class="{{ line['row_class'] }}">
-									<td class="currency {{ line['balance_class'] }}">{{ line['balance'] }}</td>
-									<td style="{{ line['account_style'] }}">{{ line['account'] }}</td>
-								</tr>
-							{% endfor %}
-							</tbody>
-						</table>
-					</section>
-				</section>
-			</div>
-		</div>
-	</div>
-
-</body>
-</html>
+{% block content %}
+<section>
+	<header class="page-header">
+		<h1>
+			{{ page['data']['title'] }}<br>
+			<small>{{ page['data']['subtitle'] }}</small>
+		</h1>
+	</header>
+	<section class="span4">
+		<table class="table table-hover table-condensed">
+			<thead>
+				<tr><th>Balance</th><th>Account</th></tr>
+			</thead>
+			<tbody>
+			{% for line in page['data']['lines'] %}
+				<tr class="{{ line['row_class'] }}">
+					<td class="currency {{ line['balance_class'] }}">{{ line['balance'] }}</td>
+					<td style="{{ line['account_style'] }}">{{ line['account'] }}</td>
+				</tr>
+			{% endfor %}
+			</tbody>
+		</table>
+	</section>
+</section>
+{% endblock content %}
