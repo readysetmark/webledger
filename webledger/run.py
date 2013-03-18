@@ -3,7 +3,7 @@ import time
 import datetime
 import calendar
 
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 
 import webledger.parser.ledgertree as ledgertree
 import webledger.journal.journal as j
@@ -20,6 +20,10 @@ app.debug = True
 
 ################################################
 # Routes
+
+@app.route("/test")
+def test():
+	return "args: " + request.args.get("cmd", "")
 
 @app.route("/")
 def balancesheet():

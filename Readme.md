@@ -87,8 +87,7 @@ Dynamic Website:
 	[x] Get barebones flask working
 	[x] map /, /balancesheet, /currentincomestatement, /previousincomestatement to current pages
 	[x] fix html/css (use proper elements ie h1, ul, etc...)
-	[] start using bootstrap
-		- need to make the chart it's own page for now
+	[x] start using bootstrap css
 	[] turn into "one page" app that takes GET parameters for what to show (with command bar)
 	[] watch ledger file and reload on change
 
