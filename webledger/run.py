@@ -22,15 +22,6 @@ app.debug = True
 # Routes
 
 @app.route("/")
-def index():
-	page = {
-		"title": "Webledger Reports",
-		"reports": get_navlist()
-	}
-	return render_template("index.html", page=page)
-
-
-@app.route("/balancesheet")
 def balancesheet():
 	parameters = balance.BalanceReportParameters(
 		title="Balance Sheet",
@@ -40,6 +31,16 @@ def balancesheet():
 		period_end=None)
 	data = balance.generate_balance_report(journal, parameters)
 
+	page = {
+		"title": "Balance Sheet",
+		"data": data,
+		"navlist": get_navlist()
+	}
+	return render_template("balance.html", page=page)
+
+
+@app.route("/networth")
+def networth():
 	two_years_ago = date_add_months(datetime.date.today(), -24)
 	two_years_ago = datetime.date(
 		year=two_years_ago.year,
@@ -51,15 +52,14 @@ def balancesheet():
 		exclude_accounts_with=["units"],
 		period_start=two_years_ago,
 		period_end=None)
-	chartdata = balance.generate_monthly_summary(journal, parameters)
+	data = balance.generate_monthly_summary(journal, parameters)
 
 	page = {
-		"title": "Balance Sheet",
+		"title": "Net Worth",
 		"data": data,
-		"chartdata": chartdata,
 		"navlist": get_navlist()
 	}
-	return render_template("balance.html", page=page)
+	return render_template("linechart.html", page=page)
 
 
 @app.route("/currentincomestatement")
@@ -143,6 +143,10 @@ def get_navlist():
 		{
 			"path": "balancesheet",
 			"title": "Balance Sheet"
+		},
+		{
+			"path": "networth",
+			"title": "Net Worth"
 		},
 		{
 			"path": "currentincomestatement",
