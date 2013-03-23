@@ -31,7 +31,7 @@ def command():
 
 	if len(command) == 0:
 		# default command for now
-		command = "balance assets liabilities :excluding units"
+		command = "balance assets liabilities :excluding units :title Balance Sheet"
 
 	cmd_parts = command.split(" ")
 
@@ -40,7 +40,6 @@ def command():
 		data = balance.generate_balance_report(journal, parameters)
 
 		page = {
-			"title": "Balance",
 			"data": data,
 			"navlist": get_navlist()
 		}
@@ -65,7 +64,6 @@ def networth():
 	data = balance.generate_monthly_summary(journal, parameters)
 
 	page = {
-		"title": "Net Worth",
 		"data": data,
 		"navlist": get_navlist()
 	}
@@ -103,7 +101,7 @@ def get_navlist():
 	"""
 	return [
 		{
-			"command": "balance assets liabilities :excluding units",
+			"command": "balance assets liabilities :excluding units :title Balance Sheet",
 			"title": "Balance Sheet"
 		},
 		{
@@ -111,11 +109,11 @@ def get_navlist():
 			"title": "Net Worth"
 		},
 		{
-			"command": "balance income expenses :period this month",
+			"command": "balance income expenses :period this month :title Income Statement",
 			"title": "Income Statement - Current Month"
 		},
 		{
-			"command": "balance income expenses :period last month",
+			"command": "balance income expenses :period last month :title Income Statement",
 			"title": "Income Statement - Previous Month"
 		}
 	]

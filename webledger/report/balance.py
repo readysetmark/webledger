@@ -47,6 +47,7 @@ class BalanceReportParameters:
 		period = []
 		period_start = None
 		period_end = None
+		title = []
 		phase = "select"
 
 		for token in command:
@@ -58,6 +59,8 @@ class BalanceReportParameters:
 				phase = "periodstart"
 			elif token == ":upto":
 				phase = "periodend"
+			elif token == ":title":
+				phase = "title"
 			elif phase == "select":
 				accounts_with.append(token)
 			elif phase == "filter":
@@ -70,6 +73,8 @@ class BalanceReportParameters:
 			elif phase == "periodend":
 				period_end = datetime.datetime.strptime(token, "%Y/%m/%d").date()
 				phase = "invalid"
+			elif phase == "title":
+				title.append(token)
 			else:
 				raise Exception("Invalid token in balance command parameters: " + token)
 
@@ -90,16 +95,17 @@ class BalanceReportParameters:
 			else:
 				raise Exception("Invalid period expression: " + period_str)
 
-		return cls(accounts_with=accounts_with if len(accounts_with) > 0 else None,
+		return cls(title=" ".join(title) if len(title) > 0 else None,
+			accounts_with=accounts_with if len(accounts_with) > 0 else None,
 			exclude_accounts_with=exclude_accounts_with if len(exclude_accounts_with) > 0 else None,
 			period_start=period_start,
 			period_end=period_end)
 
 
-	def __init__(self, title="Balance",
+	def __init__(self, title=None,
 			accounts_with=None, exclude_accounts_with=None,
 			period_start=None, period_end=None):
-		self.title = title
+		self.title = title if title != None else "Balance"
 		self.period_start = period_start
 		self.period_end = period_end
 		self.accounts_with = accounts_with
