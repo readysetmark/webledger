@@ -23,7 +23,24 @@ app.debug = True
 
 @app.route("/test")
 def test():
-	return "args: " + request.args.get("cmd", "")
+	command = request.args.get("cmd", "")
+	result = "Unknown command: " + command
+
+	cmd_parts = command.split(" ")
+
+	if cmd_parts[0] == "balance":
+		parameters = balance.BalanceReportParameters.from_command(cmd_parts[1:])
+		data = balance.generate_balance_report(journal, parameters)
+
+		page = {
+			"title": "Balance",
+			"data": data,
+			"navlist": get_navlist()
+		}
+		result = render_template("balance.html", page=page)
+
+	return result
+
 
 @app.route("/")
 def balancesheet():

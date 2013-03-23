@@ -11,20 +11,101 @@ import json
 import re
 import webledger.journal.journal as journal
 
+# duped from run.py. should find a better place for it
+def date_add_months(date, num_months):
+	"""
+	Adds num_months to date
+	"""
+	year, month, day = date.timetuple()[:3]
+
+	month += num_months
+	
+	if num_months > 0:
+		while month > 12:
+			month -= 12
+			year += 1
+	elif num_months < 0:
+		while month < 1:
+			month += 12
+			year -= 1
+
+	return datetime.date(year=year, month=month, day=day)
+
+
 #========================================================
 #	Balance Report Parameters class
 #========================================================
 
 class BalanceReportParameters:
+	@classmethod
+	def from_command(cls, command):
+		"""
+		Create a parameters object from a query command
+		"""
+		accounts_with = []
+		exclude_accounts_with = []
+		period = []
+		period_start = None
+		period_end = None
+		phase = "select"
+
+		for token in command:
+			if token == ":excluding":
+				phase = "filter"
+			elif token == ":period":
+				phase = "period"
+			elif token == ":since":
+				phase = "periodstart"
+			elif token == ":upto":
+				phase = "periodend"
+			elif phase == "select":
+				accounts_with.append(token)
+			elif phase == "filter":
+				exclude_accounts_with.append(token)
+			elif phase == "period":
+				period.append(token)
+			elif phase == "periodstart":
+				period_start = datetime.datetime.strptime(token, "%Y/%m/%d").date()
+				phase = "invalid"
+			elif phase == "periodend":
+				period_end = datetime.datetime.strptime(token, "%Y/%m/%d").date()
+				phase = "invalid"
+			else:
+				raise Exception("Invalid token in balance command parameters: " + token)
+
+		# parse period
+		# TODO: should move this somewhere else eventually
+		if len(period) > 0:
+			period_str = " ".join(period)
+
+			if period_str == "this month":
+				today = datetime.date.today()
+				period_start = datetime.date(year=today.year, month=today.month, day=1)
+				period_end = datetime.date(year=today.year, month=today.month, day=calendar.monthrange(today.year, today.month)[1])
+			elif period_str == "last month":
+				today = datetime.date.today()
+				month_ago = date_add_months(today, -1)
+				period_start = datetime.date(year=month_ago.year, month=month_ago.month, day=1)
+				period_end = datetime.date(year=month_ago.year, month=month_ago.month, day=calendar.monthrange(month_ago.year, month_ago.month)[1])
+			else:
+				raise Exception("Invalid period expression: " + period_str)
+
+		return cls(accounts_with=accounts_with if len(accounts_with) > 0 else None,
+			exclude_accounts_with=exclude_accounts_with if len(exclude_accounts_with) > 0 else None,
+			period_start=period_start,
+			period_end=period_end)
+
 
 	def __init__(self, title="Balance",
 			accounts_with=None, exclude_accounts_with=None,
-			period_start=None, period_end=datetime.date.today()):
+			period_start=None, period_end=None):
 		self.title = title
 		self.period_start = period_start
 		self.period_end = period_end
 		self.accounts_with = accounts_with
 		self.exclude_accounts_with = exclude_accounts_with
+
+
 
 
 #========================================================
