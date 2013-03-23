@@ -16,9 +16,9 @@
 	<div class="navbar navbar-inverse navbar-fixed-top">
 		<div class="navbar-inner">
 			<div class="container-fluid">
-				<a class="brand" href="{{ url_for('balancesheet') }}">Webledger</a>
+				<a class="brand" href="{{ url_for('command') }}">Webledger</a>
 
-				<form class="navbar-form pull-right" name="command" action="{{ url_for('test') }}" method="get">
+				<form class="navbar-form pull-right" name="command" action="{{ url_for('command') }}" method="get">
 					<input type="text" name="cmd" class="span8" placeholder="Command">
 					<button type="submit" class="btn btn-primary">Submit</button>
 				</form>
@@ -35,7 +35,11 @@
 					<ul class="nav nav-list">
 						<li class="nav-header">Reports</li>
 					{% for nav in page['navlist'] %}
-						<li><a href="{{ url_for(nav['path']) }}">{{ nav['title'] }}</a></li>
+						{% if "command" in nav %}
+							<li><a href="{{ url_for('command', cmd=nav['command']) }}">{{ nav['title'] }}</a></li>
+						{% else %}
+							<li><a href="{{ url_for(nav['path']) }}">{{ nav['title'] }}</a></li>
+						{% endif %}
 					{% endfor %}
 					</ul>
 				</div>

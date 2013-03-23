@@ -3,7 +3,7 @@ import time
 import datetime
 import calendar
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, url_for
 
 import webledger.parser.ledgertree as ledgertree
 import webledger.journal.journal as j
@@ -21,10 +21,17 @@ app.debug = True
 ################################################
 # Routes
 
-@app.route("/test")
-def test():
+@app.route("/")
+def command():
+	"""
+	Generate a report based on cmd query parameter.
+	"""
 	command = request.args.get("cmd", "")
 	result = "Unknown command: " + command
+
+	if len(command) == 0:
+		# default command for now
+		command = "balance assets liabilities :excluding units"
 
 	cmd_parts = command.split(" ")
 
@@ -40,24 +47,6 @@ def test():
 		result = render_template("balance.html", page=page)
 
 	return result
-
-
-@app.route("/")
-def balancesheet():
-	parameters = balance.BalanceReportParameters(
-		title="Balance Sheet",
-		accounts_with=["assets","liabilities"],
-		exclude_accounts_with=["units"],
-		period_start=None,
-		period_end=None)
-	data = balance.generate_balance_report(journal, parameters)
-
-	page = {
-		"title": "Balance Sheet",
-		"data": data,
-		"navlist": get_navlist()
-	}
-	return render_template("balance.html", page=page)
 
 
 @app.route("/networth")
@@ -81,54 +70,6 @@ def networth():
 		"navlist": get_navlist()
 	}
 	return render_template("linechart.html", page=page)
-
-
-@app.route("/currentincomestatement")
-def currentincomestatement():
-	today = datetime.date.today()
-	parameters = balance.BalanceReportParameters(
-		title="Income Statement",
-		accounts_with=["income","expenses"],
-		exclude_accounts_with=None,
-		period_start=datetime.date(year=today.year,
-			month=today.month,
-			day=1),
-		period_end=datetime.date(year=today.year,
-			month=today.month,
-			day=calendar.monthrange(today.year, today.month)[1]))
-	data = balance.generate_balance_report(journal, parameters)
-
-	page = {
-		"title": "Income Statement - Current Month", 
-		"data": data,
-		"navlist": get_navlist()
-	}
-	return render_template("balance.html", page=page)
-
-
-@app.route("/previousincomestatement")
-def previousincomestatement():
-	today = datetime.date.today()
-	month_ago = date_add_months(today, -1)
-	parameters = balance.BalanceReportParameters(
-		title="Income Statement",
-		accounts_with=["income","expenses"],
-		exclude_accounts_with=None,
-		period_start=datetime.date(year=month_ago.year,
-			month=month_ago.month,
-			day=1),
-		period_end=datetime.date(year=month_ago.year,
-			month=month_ago.month,
-			day=calendar.monthrange(month_ago.year, month_ago.month)[1]))
-	data = balance.generate_balance_report(journal, parameters)
-
-	page = {
-		"title": "Income Statement - Previous Month",
-		"data": data,
-		"navlist": get_navlist()
-	}
-
-	return render_template("balance.html", page=page)
 
 
 
@@ -162,7 +103,7 @@ def get_navlist():
 	"""
 	return [
 		{
-			"path": "balancesheet",
+			"command": "balance assets liabilities :excluding units",
 			"title": "Balance Sheet"
 		},
 		{
@@ -170,11 +111,11 @@ def get_navlist():
 			"title": "Net Worth"
 		},
 		{
-			"path": "currentincomestatement",
+			"command": "balance income expenses :period this month",
 			"title": "Income Statement - Current Month"
 		},
 		{
-			"path": "previousincomestatement",
+			"command": "balance income expenses :period last month",
 			"title": "Income Statement - Previous Month"
 		}
 	]

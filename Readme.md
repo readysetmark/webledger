@@ -88,7 +88,7 @@ Dynamic Website:
 	[x] map /, /balancesheet, /currentincomestatement, /previousincomestatement to current pages
 	[x] fix html/css (use proper elements ie h1, ul, etc...)
 	[x] start using bootstrap css
-	[] turn into "one page" app that takes GET parameters for what to show (with command bar)
+	[x] turn into "one page" app that takes GET parameters for what to show (with command bar)
 	[] watch ledger file and reload on change
 
 Register Report
@@ -96,8 +96,16 @@ Register Report
 	[] link to from balance reports
 [] Accounts Payable vs Accounts Receivable
 
+Command Bar Enhancements
+[] Clean up and improve date/period parsing
+[] Generate "networth" chart from the command bar
+
 Charts
 [] Income Statement chart (monthly, over time)
+
+Nav
+[] Configurable nav list
+[] Default report?
 
 Expenses
 [] Average in last 3 months, in last year
