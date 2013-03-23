@@ -36,9 +36,9 @@
 						<li class="nav-header">Reports</li>
 					{% for nav in page['navlist'] %}
 						{% if "command" in nav %}
-							<li><a href="{{ url_for('command', cmd=nav['command']) }}">{{ nav['title'] }}</a></li>
+							<li class="{{ 'active' if command == nav['command'] else '' }}"><a href="{{ url_for('command', cmd=nav['command']) }}">{{ nav['title'] }}</a></li>
 						{% else %}
-							<li><a href="{{ url_for(nav['path']) }}">{{ nav['title'] }}</a></li>
+							<li class="{{ 'active' if path == nav['path'] else '' }}"><a href="{{ url_for(nav['path']) }}">{{ nav['title'] }}</a></li>
 						{% endif %}
 					{% endfor %}
 					</ul>

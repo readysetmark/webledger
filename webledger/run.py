@@ -43,7 +43,7 @@ def command():
 			"data": data,
 			"navlist": get_navlist()
 		}
-		result = render_template("balance.html", page=page)
+		result = render_template("balance.html", page=page, command=command, path="/")
 
 	return result
 
@@ -67,7 +67,7 @@ def networth():
 		"data": data,
 		"navlist": get_navlist()
 	}
-	return render_template("linechart.html", page=page)
+	return render_template("linechart.html", page=page, command=None, path="networth")
 
 
 
