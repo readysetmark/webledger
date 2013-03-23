@@ -90,6 +90,7 @@ Dynamic Website:
 	[x] start using bootstrap css
 	[x] turn into "one page" app that takes GET parameters for what to show (with command bar)
 	[] watch ledger file and reload on change
+		will come back to this. look at watchdog library. need to understand python threading and flask environment better to do it.
 
 Register Report
 [] Register report with parameters (ie accounts, date range)
@@ -99,6 +100,7 @@ Register Report
 Command Bar Enhancements
 [] Clean up and improve date/period parsing
 [] Generate "networth" chart from the command bar
+[] Autocomplete hints
 
 Charts
 [] Income Statement chart (monthly, over time)
