@@ -91,6 +91,10 @@ def date_add_months(date, num_months):
 			month += 12
 			year -= 1
 
+	month_max_days = calendar.monthrange(year, month)[1]
+	if day > month_max_days:
+		day = month_max_days
+
 	return datetime.date(year=year, month=month, day=day)
 
 
