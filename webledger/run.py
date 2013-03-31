@@ -44,6 +44,15 @@ def command():
 			"navlist": get_navlist()
 		}
 		result = render_template("balance.html", page=page, command=command, path="/")
+	elif cmd_parts[0] == "register":
+		parameters = balance.BalanceReportParameters.from_command(cmd_parts[1:])
+		data = balance.generate_register_report(journal, parameters)
+
+		page = {
+			"data": data,
+			"navlist": get_navlist()
+		}
+		result = render_template("register.html", page=page, command=command, path="/")
 
 	return result
 

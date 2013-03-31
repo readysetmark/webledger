@@ -36,7 +36,7 @@ class Header:
 class Entry:
 	"""
 	A ledger transaction entry
-		- entry_type is one of no/balanced/unbalanced (TODO: fix values)
+		- entry_type is one of no/balanced/unbalanced (TODO: fix values -- this field used to be called "virtual")
 		- amount and value are both tuples of (amount, commodity)
 	"""
 

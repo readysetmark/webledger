@@ -94,11 +94,16 @@ Dynamic Website:
 
 Register Report
 [] Register report with parameters (ie accounts, date range)
+	[x] build register report generator function
+	[x] create register report template
+	[x] link up to command bar
 	[] link to from balance reports
+	[] refactoring/clean up of all reports
 [] Accounts Payable vs Accounts Receivable
 
 Command Bar Enhancements
 [] Clean up and improve date/period parsing
+	Additions for period: yyyy, last year, this year
 [] Generate "networth" chart from the command bar
 [] Autocomplete hints
 

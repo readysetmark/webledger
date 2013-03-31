@@ -301,14 +301,14 @@ def flatten_list(list):
 			for item in sublist]
 
 
-def format_amount(amount):
+def format_amount(amount, negative_in_parentheses=True):
 	"""
 	Formats an amount into a nice string for display.
 	"""
 	currency_format_string = "{:,.2f}"
 	amount_string = ""
 
-	if amount < 0:
+	if amount < 0 and negative_in_parentheses:
 		amount_string = "($" + currency_format_string.format(amount * -1) + ")"
 	else:
 		amount_string = "$" + currency_format_string.format(amount)
@@ -375,3 +375,55 @@ def generate_monthly_summary(journal_data, parameters):
 	monthly_summary["tuples"] = json.dumps(tuples, indent=4, separators=(',', ': '))
 	return monthly_summary
 
+
+
+#========================================================
+#	Register Report Generator
+#========================================================
+
+def generate_register_report(journal_data, parameters):
+	"""
+	Returns register report data based on report parameters provided
+	"""
+
+	# filter accounts based on accounts to include/exclude
+	accounts = filter_accounts(journal_data, parameters)
+
+	# get list of all entries that apply to each account
+	# within the period start/end parameters, grouped by the transaction header
+	transactions = dict()
+
+	for entry in journal_data.entries:
+		if entry.account in accounts and within_period(entry.header.date, parameters):
+			key = (entry.header.date, entry.header.description)
+			if key in transactions:
+				transactions[key].append(entry)
+			else:
+				transactions[key] = [entry]
+
+	# generate line items
+	# keep a running total
+	total = 0
+	lines = []
+	for key in sorted(transactions.keys()):
+		key_first_line = True
+		# TODO: sorted_entries = transactions[key].sort(key=lambda entry: entry.amount[0])
+		for entry in transactions[key]:
+			line = dict()
+			total += entry.amount[0]
+			if key_first_line:
+				key_first_line = False
+				line["date"] = entry.header.date
+				line["description"] = entry.header.description
+			else:
+				line["td-class"] = "no-border-top"
+			line["account"] = entry.account
+			line["amount"] = format_amount(entry.amount[0], False)
+			line["total"] = format_amount(total, False)
+			lines.append(line)
+
+	register = dict()
+	register["title"] = "Register Report"
+	register["lines"] = lines
+
+	return register
