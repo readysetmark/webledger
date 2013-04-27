@@ -17,7 +17,7 @@
 			{% for line in page['data']['lines'] %}
 				<tr class="{{ line['row_class'] }}">
 					<td class="currency {{ line['balance_class'] }}">{{ line['balance'] }}</td>
-					<td style="{{ line['account_style'] }}">{{ line['account'] }}</td>
+					<td style="{{ line['account_style'] }}"><a href="{{ url_for('command', cmd='register ' + line['account']) }}">{{ line['account_display'] }}</a></td>
 				</tr>
 			{% endfor %}
 			</tbody>

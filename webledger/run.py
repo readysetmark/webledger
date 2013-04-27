@@ -63,7 +63,7 @@ def networth():
 	two_years_ago = datetime.date(
 		year=two_years_ago.year,
 		month=two_years_ago.month,
-		day=calendar.monthrange(two_years_ago.year, two_years_ago.month)[0])
+		day=1)
 	parameters = balance.MonthlySummaryParameters(
 		title="Net Worth",
 		accounts_with=["assets","liabilities"],

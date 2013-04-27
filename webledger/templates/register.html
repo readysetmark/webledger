@@ -18,7 +18,7 @@
 				<tr>
 					<td class="{{ line['td-class'] }}">{{ line['date'] }}</td>
 					<td class="{{ line['td-class'] }}">{{ line['description'] }}</td>
-					<td class="{{ line['td-class'] }}">{{ line['account'] }}</td>
+					<td class="{{ line['td-class'] }}"><a href="{{ url_for('command', cmd='register ' + line['account']) }}">{{ line['account'] }}</a></td>
 					<td class="currency {{ line['td-class'] }}">{{ line['amount'] }}</td>
 					<td class="currency {{ line['td-class'] }}">{{ line['total'] }}</td>
 				</tr>

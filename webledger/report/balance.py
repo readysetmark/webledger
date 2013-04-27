@@ -257,7 +257,8 @@ def generate_balance_report_line(tuple):
 	indent_padding = 20
 
 	data = dict()
-	data["account"] = tuple[2]
+	data["account"] = tuple[0]
+	data["account_display"] = tuple[2]
 	data["balance"] = format_amount(tuple[1])
 	data["row_class"] = "grand_total" if len(tuple[0]) == 0 else ""
 	data["balance_class"] = tuple[0].split(":")[0].lower()

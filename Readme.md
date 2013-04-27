@@ -49,6 +49,13 @@ Install flask:
 	pip install flask
 
 
+How to Run
+----------
+
+*	Setup LEDGER_FILE environment variable
+*	Run: venv\scripts\activate
+*	Run: python webledger\run.py
+
 
 Implementation Notes
 --------------------
@@ -97,7 +104,7 @@ Register Report
 	[x] build register report generator function
 	[x] create register report template
 	[x] link up to command bar
-	[] link to from balance reports
+	[x] link to from balance reports
 	[] refactoring/clean up of all reports
 [] Accounts Payable vs Accounts Receivable
 
@@ -108,6 +115,7 @@ Command Bar Enhancements
 [] Autocomplete hints
 
 Charts
+[] Fix broken Net Worth chart??
 [] Income Statement chart (monthly, over time)
 
 Nav
