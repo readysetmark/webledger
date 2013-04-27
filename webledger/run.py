@@ -8,6 +8,7 @@ from flask import Flask, render_template, request, url_for
 import webledger.parser.ledgertree as ledgertree
 import webledger.journal.journal as j
 import webledger.report.balance as balance
+import webledger.utilities.utilities as utilities
 
 
 ################################################
@@ -59,7 +60,7 @@ def command():
 
 @app.route("/networth")
 def networth():
-	two_years_ago = date_add_months(datetime.date.today(), -24)
+	two_years_ago = utilities.date_add_months(datetime.date.today(), -24)
 	two_years_ago = datetime.date(
 		year=two_years_ago.year,
 		month=two_years_ago.month,
@@ -82,31 +83,6 @@ def networth():
 
 ################################################
 # Utilities
-
-def date_add_months(date, num_months):
-	"""
-	Adds num_months to date
-	"""
-	year, month, day = date.timetuple()[:3]
-
-	month += num_months
-	
-	if num_months > 0:
-		while month > 12:
-			month -= 12
-			year += 1
-	elif num_months < 0:
-		while month < 1:
-			month += 12
-			year -= 1
-
-	month_max_days = calendar.monthrange(year, month)[1]
-	if day > month_max_days:
-		day = month_max_days
-
-	return datetime.date(year=year, month=month, day=day)
-
-
 
 def get_navlist():
 	"""

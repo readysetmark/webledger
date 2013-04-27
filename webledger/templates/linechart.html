@@ -63,6 +63,7 @@ d3.json(json, function(error, data) {
 */
   data.forEach(function(d) {
     d.date = parseDate(d.date);
+    d.amount = parseFloat(d.amount);
   });
 
   x.domain(d3.extent(data, function(d) { return d.date; }))

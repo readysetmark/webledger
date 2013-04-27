@@ -100,13 +100,18 @@ Dynamic Website:
 		will come back to this. look at watchdog library. need to understand python threading and flask environment better to do it.
 
 Register Report
-[] Register report with parameters (ie accounts, date range)
+[x] Register report with parameters (ie accounts, date range)
 	[x] build register report generator function
 	[x] create register report template
 	[x] link up to command bar
 	[x] link to from balance reports
-	[] refactoring/clean up of all reports
+[] Sort entries by date (most recent first), then by description
+	- Need to do sorting at the end so that running total makes sense
+[] Sort amounts within an entry (check what ledger does)
 [] Accounts Payable vs Accounts Receivable
+
+All Reports
+[] Refactoring/clean up of all reports
 
 Command Bar Enhancements
 [] Clean up and improve date/period parsing
@@ -115,7 +120,7 @@ Command Bar Enhancements
 [] Autocomplete hints
 
 Charts
-[] Fix broken Net Worth chart??
+[x] Fix broken Net Worth chart (broke with large amount)
 [] Income Statement chart (monthly, over time)
 
 Nav

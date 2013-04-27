@@ -10,30 +10,7 @@ import calendar
 import json
 import re
 import webledger.journal.journal as journal
-
-# duped from run.py. should find a better place for it
-def date_add_months(date, num_months):
-	"""
-	Adds num_months to date
-	"""
-	year, month, day = date.timetuple()[:3]
-
-	month += num_months
-	
-	if num_months > 0:
-		while month > 12:
-			month -= 12
-			year += 1
-	elif num_months < 0:
-		while month < 1:
-			month += 12
-			year -= 1
-
-	month_max_days = calendar.monthrange(year, month)[1]
-	if day > month_max_days:
-		day = month_max_days
-
-	return datetime.date(year=year, month=month, day=day)
+import webledger.utilities.utilities as utilities
 
 
 #========================================================
@@ -93,7 +70,7 @@ class BalanceReportParameters:
 				period_end = datetime.date(year=today.year, month=today.month, day=calendar.monthrange(today.year, today.month)[1])
 			elif period_str == "last month":
 				today = datetime.date.today()
-				month_ago = date_add_months(today, -1)
+				month_ago = utilities.date_add_months(today, -1)
 				period_start = datetime.date(year=month_ago.year, month=month_ago.month, day=1)
 				period_end = datetime.date(year=month_ago.year, month=month_ago.month, day=calendar.monthrange(month_ago.year, month_ago.month)[1])
 			else:
