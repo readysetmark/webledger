@@ -105,9 +105,9 @@ Register Report
 	[x] create register report template
 	[x] link up to command bar
 	[x] link to from balance reports
-[] Sort entries by date (most recent first), then by description
-	- Need to do sorting at the end so that running total makes sense
-[] Sort amounts within an entry (check what ledger does)
+[x] Sorting:
+	[x] Preserve file order for transactions and entries within transactions but output in reverse so most recent is on top
+		- Need to do sorting at the end so that running total makes sense
 [] Accounts Payable vs Accounts Receivable
 
 All Reports

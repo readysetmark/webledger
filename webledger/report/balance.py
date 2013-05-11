@@ -369,7 +369,8 @@ def generate_register_report(journal_data, parameters):
 
 	# get list of all entries that apply to each account
 	# within the period start/end parameters, grouped by the transaction header
-	transactions = dict()
+	transactions = dict()      # group entries in the same transaction
+	ordered_key_list = list()  # preserve order of transactions in file
 
 	for entry in journal_data.entries:
 		if entry.account in accounts and within_period(entry.header.date, parameters):
@@ -377,20 +378,18 @@ def generate_register_report(journal_data, parameters):
 			if key in transactions:
 				transactions[key].append(entry)
 			else:
+				ordered_key_list.append(key)
 				transactions[key] = [entry]
 
-	# generate line items
-	# keep a running total
+	# generate line items and keep a running total
 	total = 0
 	lines = []
-	for key in sorted(transactions.keys()):
-		key_first_line = True
-		# TODO: sorted_entries = transactions[key].sort(key=lambda entry: entry.amount[0])
-		for entry in transactions[key]:
+	for key in ordered_key_list:
+		for (counter, entry) in enumerate(transactions[key]):
 			line = dict()
 			total += entry.amount[0]
-			if key_first_line:
-				key_first_line = False
+			if counter == (len(transactions[key]) - 1):
+				# put the description on the last entry since the list will be reversed
 				line["date"] = entry.header.date
 				line["description"] = entry.header.description
 			else:
@@ -399,6 +398,9 @@ def generate_register_report(journal_data, parameters):
 			line["amount"] = format_amount(entry.amount[0], False)
 			line["total"] = format_amount(total, False)
 			lines.append(line)
+
+	# reverse the entries so that the most recent is a top
+	lines.reverse()
 
 	register = dict()
 	register["title"] = "Register Report"
