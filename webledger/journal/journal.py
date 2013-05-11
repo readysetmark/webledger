@@ -90,15 +90,17 @@ class Journal:
 		- entries: list of all entries in the ledger file
 		- main_accounts: list of all accounts that have amounts
 		- all_accounts: list of all accounts, including parent accounts
-
-		- provides different views of that data
+		- payrec_accounts: list of all non-zero accounts under Assets:Receivables 
+			or Liabilities:Payables and the outstanding amount
 	"""
 
 	def __init__(self, entry_list):
 		self.entries = entry_list
 		self.main_accounts = set()
 		self.all_accounts = set()
+		self.payables_and_receivables_accounts = dict()
 
+		pr_accounts = dict()
 		for entry in self.entries:
 			if entry.account not in self.main_accounts:
 				self.main_accounts.add(entry.account)
@@ -106,6 +108,20 @@ class Journal:
 			for account in entry.account_lineage:
 				if account not in self.all_accounts:
 					self.all_accounts.add(account)
+
+			# find all payables and receivables account names and balances
+			if entry.account.startswith("Assets:Receivables:") or entry.account.startswith("Liabilities:Payables:"):
+				pr_account = entry.account.replace("Assets:Receivables:", "")
+				pr_account = pr_account.replace("Liabilities:Payables:", "")
+
+				if pr_account not in pr_accounts:
+					pr_accounts[pr_account] = entry.amount[0]
+				else:
+					pr_accounts[pr_account] = pr_accounts[pr_account] + entry.amount[0]
+
+		for account in pr_accounts.keys():
+			if pr_accounts[account] != 0:
+				self.payables_and_receivables_accounts[account] = pr_accounts[account]
 
 		#self.__monthly_totals = None
 		#self.__final_balances = None

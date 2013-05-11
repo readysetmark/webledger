@@ -34,12 +34,16 @@
 				<div class="well" style="padding: 8px 0;">
 					<ul class="nav nav-list">
 						<li class="nav-header">Reports</li>
-					{% for nav in page['navlist'] %}
+					{% for nav in page['reports'] %}
 						{% if "command" in nav %}
 							<li class="{{ 'active' if command == nav['command'] else '' }}"><a href="{{ url_for('command', cmd=nav['command']) }}">{{ nav['title'] }}</a></li>
 						{% else %}
 							<li class="{{ 'active' if path == nav['path'] else '' }}"><a href="{{ url_for(nav['path']) }}">{{ nav['title'] }}</a></li>
 						{% endif %}
+					{% endfor %}
+						<li class="nav-header">Payables / Receivables</li>
+					{% for nav in page['payables_receivables'] %}
+						<li class="{{ 'active' if command == nav['command'] else '' }}"><a href="{{ url_for('command', cmd=nav['command']) }}">{{ nav['title'] }}</a></li>
 					{% endfor %}
 					</ul>
 				</div>

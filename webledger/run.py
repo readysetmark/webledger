@@ -40,19 +40,13 @@ def command():
 		parameters = balance.BalanceReportParameters.from_command(cmd_parts[1:])
 		data = balance.generate_balance_report(journal, parameters)
 
-		page = {
-			"data": data,
-			"navlist": get_navlist()
-		}
+		page = get_page_data(data)
 		result = render_template("balance.html", page=page, command=command, path="/")
 	elif cmd_parts[0] == "register":
 		parameters = balance.BalanceReportParameters.from_command(cmd_parts[1:])
 		data = balance.generate_register_report(journal, parameters)
 
-		page = {
-			"data": data,
-			"navlist": get_navlist()
-		}
+		page = get_page_data(data)
 		result = render_template("register.html", page=page, command=command, path="/")
 
 	return result
@@ -73,10 +67,7 @@ def networth():
 		period_end=None)
 	data = balance.generate_monthly_summary(journal, parameters)
 
-	page = {
-		"data": data,
-		"navlist": get_navlist()
-	}
+	page = get_page_data(data)
 	return render_template("linechart.html", page=page, command=None, path="networth")
 
 
@@ -84,7 +75,20 @@ def networth():
 ################################################
 # Utilities
 
-def get_navlist():
+def get_page_data(data):
+	"""
+	Returns a dictionary of data to be rendered by the page. The "data" parameter is
+	data specific for the current page being rendered. Standard data for all pages will
+	be generated/fetched here.
+	"""
+	return {
+		"data": data,
+		"reports": get_reports(),
+		"payables_receivables": get_payables_receivables()
+	}
+
+
+def get_reports():
 	"""
 	Get list of reports to include in the navigation list
 	"""
@@ -106,6 +110,24 @@ def get_navlist():
 			"title": "Income Statement - Previous Month"
 		}
 	]
+
+
+def get_payables_receivables():
+	"""
+	Get a list of accounts payable and receivable with balances
+	"""
+	pr_accounts = list()
+
+	for account in sorted(journal.payables_and_receivables_accounts.keys()):
+		command = "register assets:receivables:" + account + " liabilities:payables:" + account
+		pr_accounts.append(
+			{
+				"title": account,
+				"command": command
+			}
+		)
+
+	return pr_accounts
 
 
 ################################################
