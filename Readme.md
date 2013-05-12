@@ -109,6 +109,7 @@ Register Report
 	[x] Preserve file order for transactions and entries within transactions but output in reverse so most recent is on top
 		- Need to do sorting at the end so that running total makes sense
 [x] Accounts Payable vs Accounts Receivable
+	- Dynamically list non-zero accounts with balance in navlist. Link to register report
 
 All Reports
 [] Refactoring/clean up of all reports

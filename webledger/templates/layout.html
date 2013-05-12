@@ -43,7 +43,7 @@
 					{% endfor %}
 						<li class="nav-header">Payables / Receivables</li>
 					{% for nav in page['payables_receivables'] %}
-						<li class="{{ 'active' if command == nav['command'] else '' }}"><a href="{{ url_for('command', cmd=nav['command']) }}">{{ nav['title'] }}</a></li>
+						<li class="{{ 'active' if command == nav['command'] else '' }}"><a href="{{ url_for('command', cmd=nav['command']) }}">{{ nav['title'] }}<span class="pull-right {{ nav['subtext-class'] }}">{{ nav['subtext'] }}</span></a></li>
 					{% endfor %}
 					</ul>
 				</div>

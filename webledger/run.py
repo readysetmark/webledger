@@ -119,11 +119,15 @@ def get_payables_receivables():
 	pr_accounts = list()
 
 	for account in sorted(journal.payables_and_receivables_accounts.keys()):
+		amount = journal.payables_and_receivables_accounts[account]
+		formatted_amount = balance.format_amount(amount)
 		command = "register assets:receivables:" + account + " liabilities:payables:" + account
 		pr_accounts.append(
 			{
 				"title": account,
-				"command": command
+				"command": command,
+				"subtext": formatted_amount,
+				"subtext-class": "positive" if amount > 0 else "negative"
 			}
 		)
 
