@@ -30,6 +30,8 @@ def command():
 	command = request.args.get("cmd", "")
 	result = "Unknown command: " + command
 
+	reload_journal_if_modified(source_filename)
+
 	if len(command) == 0:
 		# default command for now
 		command = "balance assets liabilities :excluding units :title Balance Sheet"
@@ -54,6 +56,8 @@ def command():
 
 @app.route("/networth")
 def networth():
+	reload_journal_if_modified(source_filename)
+
 	two_years_ago = utilities.date_add_months(datetime.date.today(), -24)
 	two_years_ago = datetime.date(
 		year=two_years_ago.year,
@@ -82,6 +86,7 @@ def get_page_data(data):
 	be generated/fetched here.
 	"""
 	return {
+		"title": "Webledger",
 		"data": data,
 		"reports": get_reports(),
 		"payables_receivables": get_payables_receivables()
@@ -137,18 +142,33 @@ def get_payables_receivables():
 ################################################
 # Main + Setup
 
+def reload_journal_if_modified(source_filename):
+	"""
+	Check if the journal source file has been modified since we last read it.
+	If it has, then reload it.
+	"""
+	global journal
+	global last_modified
+	if last_modified < os.stat(source_filename).st_mtime:
+		print "Detected change in ledger file, reloading"
+		(journal, last_modified) = read_journal_data(source_filename)
+
+
+
 def read_journal_data(source_filename):
 	"""
 	Read in and return the journal data
 	"""
 	t1 = time.time()
 	tree = ledgertree.parse_into_ledgertree(source_filename)
+	last_modified = os.stat(source_filename).st_mtime
 	journal = j.ledgertree_to_journal(tree)
 	t2 = time.time()
 
 	print "Parsed ledger file in %0.3f ms" % ((t2-t1)*1000.0)
+	print "Ledger file last modified %s" % time.ctime(last_modified)
 
-	return journal
+	return (journal, last_modified)
 
 
 
@@ -160,6 +180,6 @@ if __name__ == "__main__":
 	if source_filename == "":
 		print "Could not find path to ledger file in LEDGER_FILE enviornment variable."
 	else:
-		journal = read_journal_data(source_filename)
+		(journal, last_modified) = read_journal_data(source_filename)
 		
 		app.run()

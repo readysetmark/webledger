@@ -90,14 +90,16 @@ Initial Static Balance Reports:
 [x] Net Worth chart
 
 Dynamic Website:
-[] Convert all existing reports to render dynamically instead of a static page
+[x] Convert all existing reports to render dynamically instead of a static page
 	[x] Get barebones flask working
 	[x] map /, /balancesheet, /currentincomestatement, /previousincomestatement to current pages
 	[x] fix html/css (use proper elements ie h1, ul, etc...)
 	[x] start using bootstrap css
 	[x] turn into "one page" app that takes GET parameters for what to show (with command bar)
-	[] watch ledger file and reload on change
-		will come back to this. look at watchdog library. need to understand python threading and flask environment better to do it.
+	[x] watch ledger file and reload on change
+		1) On initial load, note last modified time of file
+		2) On every request, compare last modified time of file to noted time
+			If newer, (attempt to) reload journal
 
 Register Report
 [x] Register report with parameters (ie accounts, date range)
