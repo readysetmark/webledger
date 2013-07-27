@@ -57,6 +57,30 @@ How to Run
 *	Run: python webledger\run.py
 
 
+Command Bar Supported Commands
+------------------------------
+
+Commands:
+
+	balance [accounts-to-include] [parameters]
+
+	register [accounts-to-include] [parameters]
+
+Parameters:
+
+	:excluding [accounts-to-exclude]
+
+	:period [this month|last month]
+
+	:since [yyyy/mm/dd]
+
+	:upto [yyyy/mm/dd]
+
+	:title [report title]
+
+
+
+
 Implementation Notes
 --------------------
 
@@ -120,7 +144,7 @@ Command Bar Enhancements
 [] Clean up and improve date/period parsing
 	Additions for period: yyyy, last year, this year
 [] Generate "networth" chart from the command bar
-[] Autocomplete hints
+[] Autocomplete hints (bootstrap typeahead)
 
 Charts
 [x] Fix broken Net Worth chart (broke with large amount)
