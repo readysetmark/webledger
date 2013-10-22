@@ -6,7 +6,7 @@ OneCharacterSymbols = """
 ( )
 < >
 / * + -
-! & $ @ : ? #
+! & $ @ : ? # %
 , . ' "
 """
 OneCharacterSymbols = OneCharacterSymbols.split()
